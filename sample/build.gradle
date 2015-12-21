@@ -1,0 +1,95 @@
+import java.text.SimpleDateFormat
+
+apply plugin: 'com.android.application'
+
+android {
+    def versionMajor = 1 // 1 - 20000
+    def versionMinor = 0 // 0 - 99
+    def versionPatch = 0 // 0 - 999
+
+    def appName = "Sample"
+
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+
+    defaultConfig {
+        applicationId "com.evgeniysharafan.utils.sample"
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode versionMajor * 100000 + versionMinor * 1000 + versionPatch
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+    }
+
+    signingConfigs {
+        debug {
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storeFile file("${rootDir}/keystore/debug.jks")
+            storePassword 'android'
+        }
+        release {
+            keyAlias ''
+            keyPassword ''
+            storeFile file("${rootDir}/keystore/release.jks")
+            storePassword ''
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+            manifestPlaceholders = [allowBackup: false, fullBackupContent: false]
+        }
+        qa {
+            signingConfig signingConfigs.debug
+            manifestPlaceholders = [allowBackup: false, fullBackupContent: false]
+        }
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            manifestPlaceholders = [allowBackup: true, fullBackupContent: true]
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            File alignedOutputFile = output.outputFile
+            if (alignedOutputFile != null && alignedOutputFile.name.endsWith('.apk')) {
+                def buildType = variant.buildType.name
+                String buildName;
+                if ("qa".equals(buildType) || "release".equals(buildType)) {
+                    def df = new SimpleDateFormat("yy.MM.dd")
+                    df.setTimeZone(TimeZone.getTimeZone("UTC"))
+
+                    buildName = "${appName}_" +
+                            "${variant.mergedFlavor.versionName}_" +
+                            "${df.format(new Date())}_" +
+                            "${variant.buildType.name}"
+                } else {
+                    buildName = "${appName}_" +
+                            "${variant.buildType.name}"
+                }
+
+                if (variant.buildType.zipAlignEnabled) {
+                    output.outputFile = new File(alignedOutputFile.parent, buildName + '.apk')
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile project(':utils')
+}
