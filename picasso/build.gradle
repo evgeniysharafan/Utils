@@ -1,14 +1,38 @@
 apply plugin: 'com.android.library'
 
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'picasso'
+
+    publishedGroupId = 'com.evgeniysharafan.utils'
+    libraryName = 'picasso'
+    artifact = 'picasso'
+
+    libraryDescription = 'Utils library for convenient use of the most frequent things in Android development.'
+
+    siteUrl = 'https://github.com/evgeniysharafan/Utils'
+    gitUrl = 'https://github.com/evgeniysharafan/Utils.git'
+
+    libraryVersion = rootProject.ext.versionName
+
+    developerId = 'evgeniysharafan'
+    developerName = 'Evgeniy Sharafan'
+    developerEmail = 'evgeniysharafan@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
     }
     buildTypes {
         release {
@@ -19,8 +43,9 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
 }
+
+apply from: '../maven.gradle'
+apply from: '../bintray.gradle'

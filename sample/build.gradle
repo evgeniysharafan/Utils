@@ -3,21 +3,17 @@ import java.text.SimpleDateFormat
 apply plugin: 'com.android.application'
 
 android {
-    def versionMajor = 1 // 1 - 20000
-    def versionMinor = 0 // 0 - 99
-    def versionPatch = 0 // 0 - 999
-
     def appName = "Sample"
 
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         applicationId "com.evgeniysharafan.utils.sample"
-        minSdkVersion 15
-        targetSdkVersion 23
-        versionCode versionMajor * 100000 + versionMinor * 1000 + versionPatch
-        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
     }
 
     signingConfigs {

@@ -11,9 +11,5 @@ public final class App extends Application {
         super.onCreate();
 
         Utils.init(this, BuildConfig.DEBUG);
-
-        //TODO test big txt file
-//        L.e(IO.readFileAsString());
     }
-
 }
