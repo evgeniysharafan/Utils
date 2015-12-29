@@ -21,13 +21,13 @@ import java.util.concurrent.Executors;
 @SuppressWarnings("unused")
 public final class L {
 
-    public static final int MAX_CHUNK_LENGTH = 2000;
-    public static final int MAX_MESSAGE_LENGTH = 100000;
+    private static final int MAX_CHUNK_LENGTH = 2000;
+    private static final int MAX_MESSAGE_LENGTH = 100000;
 
     private static String tag;
     private static String loggerClassName;
 
-    private static boolean needWriteToFile = false;
+    private static boolean needWriteToFile;
     private static ExecutorService logFileExecutor;
     private static StringBuffer logFileBuilder;
     private static SimpleDateFormat logFileSessionNameFormatter;
@@ -37,7 +37,7 @@ public final class L {
     private L() {
     }
 
-    public static void init() {
+    static {
         tag = L.class.getSimpleName();
         loggerClassName = L.class.getName();
 
@@ -178,7 +178,6 @@ public final class L {
             }
         } else {
             String message = (String) msg;
-
             if (args.length > 0) {
                 message = String.format(message, args);
             }

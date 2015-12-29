@@ -19,7 +19,7 @@ ext {
 
     def versionMajor = 1 // 1 - 20000
     def versionMinor = 0 // 0 - 99
-    def versionPatch = 0 // 0 - 999
+    def versionPatch = 2 // 0 - 999
 
     versionCode = versionMajor * 100000 + versionMinor * 1000 + versionPatch
     versionName = "${versionMajor}.${versionMinor}.${versionPatch}"

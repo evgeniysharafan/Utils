@@ -42,7 +42,7 @@ public final class Utils {
 
     private static Application app;
     private static Handler uiHandler;
-    private static boolean isDebug = false;
+    private static boolean isDebug;
     private static Boolean isTablet;
     private static ConnectivityManager connectivityManager;
     private static InputMethodManager inputManager;
@@ -53,8 +53,6 @@ public final class Utils {
     public static void init(Application app, boolean isDebug) {
         Utils.app = app;
         Utils.isDebug = isDebug;
-
-        L.init();
 
         if (isDebug) {
             enableStrictMode();
