@@ -1,7 +1,11 @@
 package com.evgeniysharafan.utils;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
@@ -10,15 +14,15 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-
 /**
  * Logger
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "StringBufferReplaceableByString", "StringConcatenationInsideStringBufferAppend"})
 public final class L {
 
     private static final int MAX_CHUNK_LENGTH = 2000;
@@ -41,39 +45,7 @@ public final class L {
         tag = L.class.getSimpleName();
         loggerClassName = L.class.getName();
 
-        // don't write in release build
-        if (needWriteToFile) {
-            needWriteToFile = Utils.isDebug();
-        }
-
-        if (needWriteToFile) {
-            logFileExecutor = Executors.newSingleThreadExecutor();
-            logFileBuilder = new StringBuffer();
-
-            File dataDirPath = Utils.getApp().getExternalCacheDir();
-            if (dataDirPath != null) {
-                logFileSessionNameFormatter = new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US);
-                File dir = new File(dataDirPath.getParent() + "/Logs/");
-                if (!dir.exists()) {
-                    //noinspection ResultOfMethodCallIgnored
-                    dir.mkdir();
-                }
-
-                logFile = new File(dir, logFileSessionNameFormatter.format(System.currentTimeMillis()) + ".log");
-
-                logFileLevels = new SparseArray<>(6);
-                logFileLevels.put(Log.VERBOSE, "V");
-                logFileLevels.put(Log.DEBUG, "D");
-                logFileLevels.put(Log.INFO, "I");
-                logFileLevels.put(Log.WARN, "W");
-                logFileLevels.put(Log.ERROR, "E");
-                logFileLevels.put(Log.ASSERT, "A");
-            } else {
-                needWriteToFile = false;
-            }
-        }
-
-        log(Log.VERBOSE, "L logging is enabled, isDebug = " + Utils.isDebug() + ", needWriteToFile = " + needWriteToFile);
+        log(Log.VERBOSE, "L logging is enabled, isDebug = " + Utils.isDebug());
     }
 
     public static void v(int resId) {
@@ -154,14 +126,13 @@ public final class L {
         log(Log.ASSERT, msg);
     }
 
-    @SuppressWarnings("StringConcatenationInsideStringBufferAppend")
     private static void log(int level, Object msg, Object... args) {
         if (msg == null) {
             log(Log.ERROR, "Message can not be null");
             return;
         }
 
-        if (needWriteToFile) {
+        if (isNeedWriteToFile()) {
             logFileBuilder.append(logFileSessionNameFormatter.format(
                     System.currentTimeMillis())).append(": ").append(getLevel(level)).append(": ");
         }
@@ -173,7 +144,7 @@ public final class L {
             String stackTraceStringWithLocation = location + Log.getStackTraceString(throwable);
             Log.println(level, tag, stackTraceStringWithLocation);
 
-            if (needWriteToFile) {
+            if (isNeedWriteToFile()) {
                 logFileBuilder.append(stackTraceStringWithLocation);
             }
         } else {
@@ -191,7 +162,7 @@ public final class L {
                 Log.println(level, tag, chunkWithLocation);
                 Log.println(level, tag, lengthWithLocation);
 
-                if (needWriteToFile) {
+                if (isNeedWriteToFile()) {
                     logFileBuilder.append(chunkWithLocation);
                     logFileBuilder.append(lengthWithLocation);
                 }
@@ -199,7 +170,7 @@ public final class L {
                 String chunkWithLocation = location + message.substring(0, MAX_CHUNK_LENGTH);
                 Log.println(level, tag, chunkWithLocation);
 
-                if (needWriteToFile) {
+                if (isNeedWriteToFile()) {
                     logFileBuilder.append(chunkWithLocation);
                 }
 
@@ -208,13 +179,13 @@ public final class L {
                 String messageWithLocation = location + message;
                 Log.println(level, tag, messageWithLocation);
 
-                if (needWriteToFile) {
+                if (isNeedWriteToFile()) {
                     logFileBuilder.append(messageWithLocation);
                 }
             }
         }
 
-        if (needWriteToFile) {
+        if (isNeedWriteToFile()) {
             logFileBuilder.append("\n");
             write(logFileBuilder.toString());
             logFileBuilder.delete(0, logFileBuilder.length());
@@ -262,35 +233,6 @@ public final class L {
         return "";
     }
 
-    private static void write(final String str) {
-        logFileExecutor.submit(new Runnable() {
-            @Override
-            public void run() {
-                BufferedWriter writer = null;
-                try {
-                    writer = new BufferedWriter(new FileWriter(logFile, true));
-                    writer.write(str);
-                } catch (Exception e) {
-                    e(e);
-                    needWriteToFile = false;
-                } finally {
-                    try {
-                        if (writer != null) {
-                            writer.close();
-                        }
-                    } catch (Exception e) {
-                        // ignore
-                    }
-                }
-            }
-        });
-    }
-
-    public static boolean needWriteToFile() {
-        return needWriteToFile;
-    }
-
-    @SuppressWarnings("StringConcatenationInsideStringBufferAppend")
     public static void logIntent(Intent intent) {
         if (Utils.isDebug()) {
             if (intent == null) {
@@ -325,7 +267,6 @@ public final class L {
         }
     }
 
-    @SuppressWarnings("StringConcatenationInsideStringBufferAppend")
     public static void logBundle(Bundle bundle) {
         if (Utils.isDebug()) {
             StringBuilder sb = new StringBuilder();
@@ -344,6 +285,150 @@ public final class L {
 
             d(sb.toString());
         }
+    }
+
+    public static boolean isNeedWriteToFile() {
+        return needWriteToFile;
+    }
+
+    public static void setNeedWriteToFile(boolean needWrite, boolean writeInRelease) {
+        // don't write in release build
+        needWriteToFile = needWrite && (writeInRelease || Utils.isDebug());
+        if (needWriteToFile) {
+            initWriteToFile();
+        }
+    }
+
+    private static void initWriteToFile() {
+        logFileExecutor = Executors.newSingleThreadExecutor();
+        logFileBuilder = new StringBuffer();
+
+        File logsDir = getLogsDir();
+        if (logsDir != null) {
+            logFileSessionNameFormatter = new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US);
+            logFile = new File(logsDir, logFileSessionNameFormatter.format(System.currentTimeMillis()) + ".txt");
+
+            logFileLevels = new SparseArray<>(6);
+            logFileLevels.put(Log.VERBOSE, "V");
+            logFileLevels.put(Log.DEBUG, "D");
+            logFileLevels.put(Log.INFO, "I");
+            logFileLevels.put(Log.WARN, "W");
+            logFileLevels.put(Log.ERROR, "E");
+            logFileLevels.put(Log.ASSERT, "A");
+
+            log(Log.VERBOSE, DeviceInfo.getDeviceInfo());
+        } else {
+            setNeedWriteToFile(false, false);
+            e("Can't log to file, logsDir == null");
+        }
+    }
+
+    private static File getLogsDir() {
+        File dataDirPath = Utils.getApp().getExternalFilesDir(null);
+        if (dataDirPath != null) {
+            File dir = new File(dataDirPath + "/Logs/");
+            if (dir.exists()) {
+                return dir;
+            } else {
+                return dir.mkdir() ? dir : null;
+            }
+        }
+
+        return null;
+    }
+
+    private static void write(final String str) {
+        logFileExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                if (isNeedWriteToFile()) {
+                    BufferedWriter writer = null;
+                    try {
+                        writer = new BufferedWriter(new FileWriter(logFile, true));
+                        writer.write(str);
+                    } catch (Exception e) {
+                        setNeedWriteToFile(false, false);
+                        e(e);
+                    } finally {
+                        try {
+                            if (writer != null) {
+                                writer.close();
+                            }
+                        } catch (Exception e) {
+                            // ignore
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    public static void sendLogsToEmail(Activity activity, @Nullable String... emails) {
+        setNeedWriteToFile(false, false);
+
+        File logsDir = getLogsDir();
+        if (logsDir != null) {
+            ArrayList<Uri> uris = new ArrayList<>();
+            String fileProviderAuthority = Res.getString(R.string.file_provider_authority);
+
+            for (File file : logsDir.listFiles()) {
+                Uri uri = FileProvider.getUriForFile(Utils.getApp(), fileProviderAuthority, file);
+                uris.add(uri);
+            }
+
+            if (!uris.isEmpty()) {
+                Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+                intent.setType("text/plain");
+
+                if (emails != null) {
+                    intent.putExtra(Intent.EXTRA_EMAIL, emails);
+                }
+                intent.putExtra(Intent.EXTRA_SUBJECT, DeviceInfo.getBaseSendSubject() + " logs");
+                intent.putExtra(Intent.EXTRA_TEXT, "Describe the issue here please");
+                intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                activity.startActivity(Intent.createChooser(intent, "Send logs through (Gmail is preferred)…"));
+            } else {
+                i("Can't send logs, logsDir is empty");
+                Toasts.showLong("Can't send logs, logs directory is empty");
+            }
+        } else {
+            e("Can't send logs, logsDir == null");
+            Toasts.showLong("Can't send logs, logs directory doesn't exist or unavailable");
+        }
+    }
+
+    public static void clearLogsFolder() {
+        setNeedWriteToFile(false, false);
+
+        File logsDir = getLogsDir();
+        if (logsDir != null) {
+            for (File file : logsDir.listFiles()) {
+                // we don't create directories here, so we don't delete them.
+                if (!file.isDirectory()) {
+                    if (!file.delete()) {
+                        e("Can't delete " + file.getName() + " file");
+                        Toasts.showLong("Can't delete " + file.getName() + " file");
+                    }
+                }
+            }
+        } else {
+            e("Can't clear logs, logsDir == null");
+            Toasts.showLong("Can't clear logs, logs directory doesn't exist or unavailable");
+        }
+    }
+
+    public static int getLogsQuantity() {
+        int quantity = 0;
+
+        File logsDir = getLogsDir();
+        if (logsDir != null) {
+            quantity = logsDir.listFiles().length;
+        }
+
+        return quantity;
     }
 
 }

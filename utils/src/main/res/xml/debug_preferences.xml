@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:key="@string/key_debug_send_device_info"
+        android:summary="@string/summary_debug_send_device_info"
+        android:title="@string/title_debug_send_device_info" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="@string/key_debug_write_logs_to_file"
+        android:summaryOff="@string/summary_off_debug_write_logs_to_file"
+        android:summaryOn="@string/summary_on_debug_write_logs_to_file"
+        android:title="@string/title_debug_write_logs_to_file" />
+
+    <Preference
+        android:key="@string/key_debug_send_logs"
+        android:title="@string/title_debug_send_logs" />
+
+    <Preference
+        android:key="@string/key_debug_clear_logs_folder"
+        android:title="@string/title_debug_clear_logs_folder" />
+
+    <Preference
+        android:enabled="false"
+        android:key="@string/key_debug_version_name"
+        android:shouldDisableView="false"
+        android:title="@string/title_debug_version_name" />
+
+    <Preference
+        android:enabled="false"
+        android:key="@string/key_debug_version_code"
+        android:shouldDisableView="false"
+        android:title="@string/title_debug_version_code" />
+</PreferenceScreen>

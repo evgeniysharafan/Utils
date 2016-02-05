@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_debug_settings">key_debug_settings</string>
+    <string name="title_debug_settings">Debug settings</string>
+    <string name="summary_debug_settings">For debug builds only</string>
+    <string name="summary_debug_logs_folder_empty">Logs folder is empty</string>
+    <string name="summary_debug_disable_writing_logs">Disable writing logs item to enable this one</string>
+
+    <string name="key_debug_send_device_info">key_debug_send_device_info</string>
+    <string name="title_debug_send_device_info">Send device info (Gmail is preferred)</string>
+    <string name="summary_debug_send_device_info">Info about device and system</string>
+
+    <string name="key_debug_write_logs_to_file">key_debug_write_logs_to_file</string>
+    <string name="title_debug_write_logs_to_file">Write logs to file</string>
+    <string name="summary_off_debug_write_logs_to_file">Enable it, do the actions which produce an issue, disable, and send logs to developers</string>
+    <string name="summary_on_debug_write_logs_to_file">Writing logs…</string>
+
+    <string name="key_debug_send_logs">key_debug_send_logs</string>
+    <string name="title_debug_send_logs">Send logs (Gmail is preferred)</string>
+    <plurals name="summary_debug_send_logs">
+        <item quantity="one">Send 1 log file to developers</item>
+        <item quantity="other">Send %d log files to developers</item>
+    </plurals>
+
+    <string name="key_debug_clear_logs_folder">key_debug_clear_logs_folder</string>
+    <string name="title_debug_clear_logs_folder">Clear logs folder</string>
+    <plurals name="summary_debug_clear_logs_folder">
+        <item quantity="one">Delete 1 log file</item>
+        <item quantity="other">Delete %d log files</item>
+    </plurals>
+
+    <string name="key_debug_version_name">key_debug_version_name</string>
+    <string name="title_debug_version_name">Version name</string>
+
+    <string name="key_debug_version_code">key_debug_version_code</string>
+    <string name="title_debug_version_code">Version code</string>
+
+    <!-- File provider authority for sending files through Gmail on Android 6+ -->
+    <string name="file_provider_authority">com.evgeniysharafan.utils.fileprovider</string>
+</resources>

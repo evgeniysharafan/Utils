@@ -36,10 +36,6 @@ android {
             signingConfig signingConfigs.debug
             manifestPlaceholders = [allowBackup: false, fullBackupContent: false]
         }
-        qa {
-            signingConfig signingConfigs.debug
-            manifestPlaceholders = [allowBackup: false, fullBackupContent: false]
-        }
         release {
             signingConfig signingConfigs.release
             minifyEnabled false
@@ -60,18 +56,18 @@ android {
         variant.outputs.each { output ->
             File alignedOutputFile = output.outputFile
             if (alignedOutputFile != null && alignedOutputFile.name.endsWith('.apk')) {
-                def buildType = variant.buildType.name
                 String buildName;
-                if ("qa".equals(buildType) || "release".equals(buildType)) {
-                    def df = new SimpleDateFormat("yy.MM.dd")
+
+                def buildType = variant.buildType.name
+                if ("debug".equals(buildType)) {
+                    buildName = "${appName}_" + "${variant.buildType.name}"
+                } else {
+                    def df = new SimpleDateFormat("dd.MM.yy")
                     df.setTimeZone(TimeZone.getTimeZone("UTC"))
 
                     buildName = "${appName}_" +
                             "${variant.mergedFlavor.versionName}_" +
                             "${df.format(new Date())}_" +
-                            "${variant.buildType.name}"
-                } else {
-                    buildName = "${appName}_" +
                             "${variant.buildType.name}"
                 }
 
