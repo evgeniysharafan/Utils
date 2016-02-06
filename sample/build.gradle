@@ -60,7 +60,7 @@ android {
 
                 def buildType = variant.buildType.name
                 if ("debug".equals(buildType)) {
-                    // We can't rename debug builds because of an issue of Android Studio.
+                    // We can't add date to debug builds because of an issue of Android Studio.
                     // Sometimes IDE pushes old build to device instead of the latest one.
                     // That's why the name of debug builds should be the same.
                     buildName = "${appName}_" + "${variant.buildType.name}"

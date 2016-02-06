@@ -27,6 +27,7 @@ public final class L {
 
     private static final int MAX_CHUNK_LENGTH = 2000;
     private static final int MAX_MESSAGE_LENGTH = 100000;
+    private static final String LOGS_FILE_PROVIDER_SUFFIX = ".logsfileprovider";
 
     private static String tag;
     private static String loggerClassName;
@@ -369,7 +370,7 @@ public final class L {
         File logsDir = getLogsDir();
         if (logsDir != null) {
             ArrayList<Uri> uris = new ArrayList<>();
-            String fileProviderAuthority = Res.getString(R.string.file_provider_authority);
+            String fileProviderAuthority = Utils.getPackageName() + LOGS_FILE_PROVIDER_SUFFIX;
 
             for (File file : logsDir.listFiles()) {
                 Uri uri = FileProvider.getUriForFile(Utils.getApp(), fileProviderAuthority, file);

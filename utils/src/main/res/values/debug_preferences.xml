@@ -34,7 +34,4 @@
 
     <string name="key_debug_version_code">key_debug_version_code</string>
     <string name="title_debug_version_code">Version code</string>
-
-    <!-- File provider authority for sending files through Gmail on Android 6+ -->
-    <string name="file_provider_authority">com.evgeniysharafan.utils.fileprovider</string>
 </resources>
