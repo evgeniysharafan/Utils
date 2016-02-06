@@ -17,12 +17,13 @@ import com.evgeniysharafan.utils.ui.fragment.DebugSettingsFragment;
 @SuppressWarnings("unused")
 public class DebugSettingsActivity extends AppCompatActivity {
 
-    public static void launch(Activity activity, @Nullable String... emailsForSending) {
-        activity.startActivity(getIntent(activity, emailsForSending));
+    public static void launch(Activity activity, boolean writeInRelease, @Nullable String... emailsForSending) {
+        activity.startActivity(getIntent(activity, writeInRelease, emailsForSending));
     }
 
-    public static Intent getIntent(Activity activity, @Nullable String... emailsForSending) {
+    public static Intent getIntent(Activity activity, boolean writeInRelease, @Nullable String... emailsForSending) {
         return new Intent(activity, DebugSettingsActivity.class)
+                .putExtra(DebugSettingsFragment.ARG_WRITE_IN_RELEASE, writeInRelease)
                 .putExtra(DebugSettingsFragment.ARG_EMAILS, emailsForSending);
     }
 
@@ -32,7 +33,7 @@ public class DebugSettingsActivity extends AppCompatActivity {
             Preference debugSettings = new Preference(activity);
             debugSettings.setKey(Res.getString(R.string.key_debug_settings));
             debugSettings.setTitle(R.string.title_debug_settings);
-            debugSettings.setIntent(getIntent(activity, emailsForSending));
+            debugSettings.setIntent(getIntent(activity, showInRelease, emailsForSending));
             debugSettings.setSummary(R.string.summary_debug_settings);
             screen.addPreference(debugSettings);
         }
@@ -46,7 +47,8 @@ public class DebugSettingsActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction().replace(R.id.content, DebugSettingsFragment
-                            .newInstance(getIntent().getStringArrayExtra(DebugSettingsFragment.ARG_EMAILS)),
+                            .newInstance(getIntent().getBooleanExtra(DebugSettingsFragment.ARG_WRITE_IN_RELEASE,
+                                    false), getIntent().getStringArrayExtra(DebugSettingsFragment.ARG_EMAILS)),
                     DebugSettingsFragment.class.getSimpleName()).commit();
         }
     }

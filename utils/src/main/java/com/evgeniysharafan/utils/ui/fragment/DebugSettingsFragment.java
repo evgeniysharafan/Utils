@@ -25,6 +25,7 @@ import static android.preference.Preference.OnPreferenceClickListener;
 public class DebugSettingsFragment extends PreferenceFragment implements OnPreferenceClickListener,
         OnPreferenceChangeListener {
 
+    public static final String ARG_WRITE_IN_RELEASE = "arg_write_in_release";
     public static final String ARG_EMAILS = "arg_emails";
 
     private Preference sendDeviceInfo;
@@ -34,9 +35,10 @@ public class DebugSettingsFragment extends PreferenceFragment implements OnPrefe
     private Preference versionName;
     private Preference versionCode;
 
-    public static DebugSettingsFragment newInstance(@Nullable String... emailsForSending) {
+    public static DebugSettingsFragment newInstance(boolean writeInRelease, @Nullable String... emailsForSending) {
         DebugSettingsFragment fragment = new DebugSettingsFragment();
         Bundle args = new Bundle();
+        args.putBoolean(ARG_WRITE_IN_RELEASE, writeInRelease);
         args.putStringArray(ARG_EMAILS, emailsForSending);
         fragment.setArguments(args);
 
@@ -121,8 +123,12 @@ public class DebugSettingsFragment extends PreferenceFragment implements OnPrefe
         }
     }
 
+    private boolean getWriteInRelease() {
+        return getArguments().getBoolean(ARG_WRITE_IN_RELEASE);
+    }
+
     private String[] getEmailsForSending() {
-        return getArguments() != null ? getArguments().getStringArray(ARG_EMAILS) : null;
+        return getArguments().getStringArray(ARG_EMAILS);
     }
 
     @Override
@@ -144,7 +150,7 @@ public class DebugSettingsFragment extends PreferenceFragment implements OnPrefe
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         String key = preference.getKey();
         if (key.equals(Res.getString(R.string.key_debug_write_logs_to_file))) {
-            L.setNeedWriteToFile((Boolean) newValue, false);
+            L.setNeedWriteToFile((Boolean) newValue, getWriteInRelease());
             update();
         }
 
