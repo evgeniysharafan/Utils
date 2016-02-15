@@ -6,6 +6,10 @@
     <string name="summary_debug_logs_folder_empty">Logs folder is empty</string>
     <string name="summary_debug_disable_writing_logs">Disable writing logs item to enable this one</string>
 
+    <string name="key_debug_send_feedback">key_debug_send_feedback</string>
+    <string name="title_debug_send_feedback">Send feedback (Gmail is preferred)</string>
+    <string name="summary_debug_send_feedback">Issues and improvements</string>
+
     <string name="key_debug_send_device_info">key_debug_send_device_info</string>
     <string name="title_debug_send_device_info">Send device info (Gmail is preferred)</string>
     <string name="summary_debug_send_device_info">Info about device and system</string>

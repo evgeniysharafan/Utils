@@ -29,6 +29,18 @@ public final class DeviceInfo {
     private DeviceInfo() {
     }
 
+    public static void sendFeedbackToEmail(Activity activity, @Nullable String... emails) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+
+        if (emails != null) {
+            intent.putExtra(Intent.EXTRA_EMAIL, emails);
+        }
+        intent.putExtra(Intent.EXTRA_SUBJECT, getBaseSendSubject() + " feedback");
+
+        activity.startActivity(Intent.createChooser(intent, "Send feedback through (Gmail is preferred)…"));
+    }
+
     public static void sendDeviceInfoToEmail(Activity activity, @Nullable String... emails) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
@@ -43,15 +55,15 @@ public final class DeviceInfo {
     }
 
     public static String getBaseSendSubject() {
-        return new StringBuilder(70).append(DeviceInfo.getDeviceName())
-                .append(" ")
-                .append(Utils.getPackageName())
+        return new StringBuilder(70).append(Utils.getPackageName())
                 .append(" ")
                 .append(Utils.isDebug() ? "debug" : "release")
                 .append(" ")
                 .append(Utils.getVersionName())
                 .append(" ")
                 .append(Utils.getVersionCode())
+                .append(" ")
+                .append(DeviceInfo.getDeviceName())
                 .toString();
     }
 

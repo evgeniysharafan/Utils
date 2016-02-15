@@ -19,6 +19,8 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -307,21 +309,27 @@ public final class Utils {
         }
     }
 
-    public static int getActionBarSize() {
-        Resources.Theme curTheme = app.getTheme();
-        if (curTheme == null) {
-            return 0;
+    /**
+     * @return action bar height in pixels
+     */
+    public static int getActionBarHeight(AppCompatActivity activity) {
+        int size = 0;
+
+        if (activity != null) {
+            ActionBar actionBar = activity.getSupportActionBar();
+            if (actionBar != null) {
+                Resources.Theme curTheme = actionBar.getThemedContext().getTheme();
+                if (curTheme != null) {
+                    TypedArray att = curTheme.obtainStyledAttributes(new int[]{com.evgeniysharafan.utils.R.attr.actionBarSize});
+                    if (att != null) {
+                        size = att.getDimensionPixelSize(0, 0);
+                        att.recycle();
+                    }
+                }
+            }
         }
 
-        TypedArray att = curTheme.obtainStyledAttributes(new int[]{R.attr.actionBarSize});
-        if (att == null) {
-            return 0;
-        }
-
-        float size = att.getDimension(0, 0);
-        att.recycle();
-
-        return (int) size;
+        return size;
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)

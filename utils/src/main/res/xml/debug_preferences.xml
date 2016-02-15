@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <Preference
+        android:key="@string/key_debug_send_feedback"
+        android:summary="@string/summary_debug_send_feedback"
+        android:title="@string/title_debug_send_feedback" />
+
+    <Preference
         android:key="@string/key_debug_send_device_info"
         android:summary="@string/summary_debug_send_device_info"
         android:title="@string/title_debug_send_device_info" />

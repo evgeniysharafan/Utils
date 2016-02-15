@@ -1,3 +1,5 @@
+import java.text.SimpleDateFormat
+
 apply plugin: 'com.jfrog.bintray'
 
 version = libraryVersion
@@ -5,6 +7,8 @@ version = libraryVersion
 task javadoc(type: Javadoc) {
     failOnError = false
     source = android.sourceSets.main.java.srcDirs
+    android.compileSdkVersion rootProject.ext.compileSdkVersion
+    android.buildToolsVersion rootProject.ext.buildToolsVersion
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 }
 
@@ -42,7 +46,10 @@ bintray {
         publish = true
         publicDownloadNumbers = true
         version {
+            name = rootProject.ext.versionName
             desc = libraryDescription
+            released = new SimpleDateFormat('yyyy-MM-dd\'T\'HH:mm:ss.SSSZZ').format(new Date())
+            vcsTag = rootProject.ext.versionName
             gpg {
                 sign = true //Determines whether to GPG sign the files. The default is false
                 passphrase = properties.getProperty("bintray.gpg.password")

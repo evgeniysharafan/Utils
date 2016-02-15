@@ -31,16 +31,45 @@ public final class RandomUtils {
         return random.nextInt();
     }
 
-    public static boolean getBool() {
-        return random.nextBoolean();
-    }
-
     /**
      * Returns a pseudo-RANDOM uniformly distributed {@code int} in the
      * half-open range [0, n). If n == 0 returns 0.
      */
     public static int getInt(int n) {
         return n > 0 ? random.nextInt(n) : 0;
+    }
+
+    /**
+     * Very ineffective, don't use it if you need to get result fast.
+     * Includes min and max.
+     */
+    public static int getInt(int min, int max) {
+        int result = getInt(max + 1);
+        while (result < min) {
+            result = getInt(max + 1);
+        }
+
+        return result;
+    }
+
+    public static double getDouble() {
+        return random.nextDouble();
+    }
+
+    public static byte getByte() {
+        byte[] buf = new byte[1];
+        random.nextBytes(buf);
+        return buf[0];
+    }
+
+    public static byte[] getBytes(int length) {
+        byte[] buf = new byte[length];
+        random.nextBytes(buf);
+        return buf;
+    }
+
+    public static boolean getBoolean() {
+        return random.nextBoolean();
     }
 
     public static String getString(int maxLength) {
@@ -64,11 +93,10 @@ public final class RandomUtils {
     }
 
     public static String getPhoneNumber() {
-        boolean isShortFormat = getInt(10) % 2 == 0;
+        boolean isShortFormat = getBoolean();
         int length = isShortFormat ? 9 : 12;
 
         stringBuilder.delete(0, stringBuilder.length());
-
         stringBuilder.append(isShortFormat ? "0" : "+");
 
         for (int i = 0; i < length; ++i) {

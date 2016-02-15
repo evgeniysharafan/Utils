@@ -28,6 +28,7 @@ public class DebugSettingsFragment extends PreferenceFragment implements OnPrefe
     public static final String ARG_WRITE_IN_RELEASE = "arg_write_in_release";
     public static final String ARG_EMAILS = "arg_emails";
 
+    private Preference sendFeedback;
     private Preference sendDeviceInfo;
     private SwitchPreference writeLogs;
     private Preference sendLogs;
@@ -78,6 +79,9 @@ public class DebugSettingsFragment extends PreferenceFragment implements OnPrefe
     }
 
     private void findPreferences() {
+        sendFeedback = findPreference(Res.getString(R.string.key_debug_send_feedback));
+        sendFeedback.setOnPreferenceClickListener(this);
+
         sendDeviceInfo = findPreference(Res.getString(R.string.key_debug_send_device_info));
         sendDeviceInfo.setOnPreferenceClickListener(this);
 
@@ -134,7 +138,9 @@ public class DebugSettingsFragment extends PreferenceFragment implements OnPrefe
     @Override
     public boolean onPreferenceClick(Preference preference) {
         String key = preference.getKey();
-        if (key.equals(Res.getString(R.string.key_debug_send_device_info))) {
+        if (key.equals(Res.getString(R.string.key_debug_send_feedback))) {
+            DeviceInfo.sendFeedbackToEmail(getActivity(), getEmailsForSending());
+        } else if (key.equals(Res.getString(R.string.key_debug_send_device_info))) {
             DeviceInfo.sendDeviceInfoToEmail(getActivity(), getEmailsForSending());
         } else if (key.equals(Res.getString(R.string.key_debug_send_logs))) {
             L.sendLogsToEmail(getActivity(), getEmailsForSending());
