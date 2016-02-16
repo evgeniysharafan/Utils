@@ -3,6 +3,19 @@
 Utils library for convenient use of the most frequent things in Android development.
 It contains [logger](utils/src/main/java/com/evgeniysharafan/utils/L.java), [preferences utils](utils/src/main/java/com/evgeniysharafan/utils/PrefUtils.java), and other such stuff which writes any Android developer.
 
+To init the library you should call Utils.init(this, BuildConfig.DEBUG); in your Application's onCreate() method.
+
+To use logger you don't need a tag, just write L.d("some text"), it will be debug level. L class has methods for all log levels and disables verbose and debug levels for release builds. L adds information about location and able to duplicate all messages to a log file. In our case it will look like this: D/L: [ChatsFragment.onCreateView() : 51]: some text.
+L has methods logIntent(Intent intent) and logBundle(Bundle bundle) to print all information about an Intent or a Bundle to debug level.
+
+The library contains [TimeLogger](utils/src/main/java/com/evgeniysharafan/utils/TimeLogger.java) to measure an execution time of some methods. For example you can measure fow long your onBindViewHolder(ViewHolder holder, int position) method works and print the mean value or each measure to L.w() and L.e(). These log levels have been chosen because you don't need to use TimeLogger on a permanent basis, you just need to check places which may have issues with execution time and remove it.
+
+[Toasts](utils/src/main/java/com/evgeniysharafan/utils/Toasts.java) class to show toasts with application's context.
+
+[Res](utils/src/main/java/com/evgeniysharafan/utils/Res.java) class for getting resources with application's context.
+
+[RandomUtils](utils/src/main/java/com/evgeniysharafan/utils/RandomUtils.java) class is useful for making mock objects with hardcoded data.
+
 Examples of usage of this library can be found [here](https://github.com/evgeniysharafan/BaseProject).
 
 -
