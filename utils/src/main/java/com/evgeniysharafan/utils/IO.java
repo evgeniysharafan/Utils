@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  * IO utils
@@ -162,16 +164,79 @@ public final class IO {
         if (folder != null && folder.isDirectory()) {
             File[] files = folder.listFiles();
             if (files != null) {
-                for (File f : files) {
-                    if (f.isDirectory()) {
-                        deleteFolder(f);
+                for (File file : files) {
+                    if (file.isDirectory()) {
+                        if (deleteFoldersInside) {
+                            deleteFolder(file);
+                        }
                     } else {
                         //noinspection ResultOfMethodCallIgnored
-                        deleteFile(f);
+                        deleteFile(file);
                     }
                 }
             }
         }
+    }
+
+    /**
+     * Sorts all files in the folder by last modified and deletes the oldest ones. Remains remainLatestFilesCount.
+     * It's useful if you need to shrink your cache.
+     */
+    public static void deleteFilesInFolder(File folder, int remainLatestFilesCount, boolean deleteFoldersInside) {
+        if (folder != null && folder.isDirectory()) {
+            File[] files = folder.listFiles();
+            if (files != null) {
+                if (files.length > remainLatestFilesCount) {
+                    sortByLastModified(files);
+
+                    int filesForDeletionLength = files.length - remainLatestFilesCount;
+                    File[] filesForDeletion = new File[filesForDeletionLength];
+
+                    System.arraycopy(files, 0, filesForDeletion, 0, filesForDeletionLength);
+                    deleteFiles(filesForDeletion, deleteFoldersInside);
+                }
+            }
+        }
+    }
+
+    /**
+     * Sorts all files in the folder by last modified and deletes the oldest ones.
+     * Remains files last modified after beforeDateInMillis.
+     * It's useful if you need to shrink your cache.
+     */
+    public static void deleteFilesInFolder(File folder, long beforeDateInMillis, boolean deleteFoldersInside) {
+        if (folder != null && folder.isDirectory()) {
+            File[] files = folder.listFiles();
+            if (files != null) {
+                sortByLastModified(files);
+
+                int filesForDeletionLength = 0;
+                for (File file : files) {
+                    if (file.lastModified() < beforeDateInMillis) {
+                        filesForDeletionLength++;
+                    }
+                }
+
+                if (filesForDeletionLength > 0) {
+                    File[] filesForDeletion = new File[filesForDeletionLength];
+                    System.arraycopy(files, 0, filesForDeletion, 0, filesForDeletionLength);
+                    deleteFiles(filesForDeletion, deleteFoldersInside);
+                }
+            }
+        }
+    }
+
+    /**
+     * The oldest files will be at the beginning of the array
+     */
+    public static void sortByLastModified(File[] array) {
+        Arrays.sort(array, new Comparator<File>() {
+            @Override
+            public int compare(File lhs, File rhs) {
+                return lhs.lastModified() > rhs.lastModified() ? 1
+                        : (lhs.lastModified() < rhs.lastModified() ? -1 : 0);
+            }
+        });
     }
 
     public static boolean deleteFile(String path) {
@@ -196,11 +261,13 @@ public final class IO {
      *
      * @param deleteFoldersInside delete folders inside
      */
-    public static void deleteFiles(boolean deleteFoldersInside, File... files) {
+    public static void deleteFiles(File[] files, boolean deleteFoldersInside) {
         if (files != null) {
             for (File file : files) {
-                if (file.isDirectory() && deleteFoldersInside) {
-                    deleteFolder(file);
+                if (file.isDirectory()) {
+                    if (deleteFoldersInside) {
+                        deleteFolder(file);
+                    }
                 } else {
                     //noinspection ResultOfMethodCallIgnored
                     deleteFile(file);

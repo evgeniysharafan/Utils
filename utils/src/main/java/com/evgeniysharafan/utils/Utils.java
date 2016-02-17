@@ -33,6 +33,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -459,6 +461,10 @@ public final class Utils {
                 }
             }
         }
+    }
+
+    public static <T> void reverse(T[] array) {
+        Collections.reverse(Arrays.asList(array));
     }
 
 }
