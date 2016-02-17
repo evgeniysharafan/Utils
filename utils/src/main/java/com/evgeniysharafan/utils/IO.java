@@ -29,6 +29,9 @@ public final class IO {
         return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
     }
 
+    /**
+     * @return free space in bytes. 0 if storage is unmounted.
+     */
     public static long getFreeExternalSpace() {
         long freeSpace = 0;
 
@@ -41,10 +44,16 @@ public final class IO {
         return freeSpace;
     }
 
+    /**
+     * @return free space in bytes
+     */
     public static long getFreeInternalSpace() {
         return getFreeSpace(Environment.getDataDirectory());
     }
 
+    /**
+     * @return free space in bytes
+     */
     @SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public static long getFreeSpace(File path) {
@@ -58,10 +67,36 @@ public final class IO {
         return freeSpace;
     }
 
+    public static long getApkSize() {
+        long apkSize;
+
+        File apk = new File(Utils.getApp().getPackageCodePath());
+        apkSize = apk.length();
+
+        return apkSize;
+    }
+
+    /**
+     * Formats a content size to be in the form of bytes, kilobytes, megabytes, etc.
+     * For example 7146242048 bytes converts to 6.66 GB
+     */
+    public static String getFormattedFileSize(long sizeInBytes) {
+        return Formatter.formatFileSize(Utils.getApp(), sizeInBytes);
+    }
+
+    /**
+     * Like {@link #getFormattedFileSize}, but trying to generate shorter numbers
+     * (showing fewer digits of precision).
+     * For example 7146242048 bytes converts to 6.7 GB
+     */
+    public static String getFormattedShortFileSize(long sizeInBytes) {
+        return Formatter.formatShortFileSize(Utils.getApp(), sizeInBytes);
+    }
+
     public static int getFilesCountInDirectory(File folder) {
         int count = 0;
 
-        if (folder.exists() && folder.isDirectory()) {
+        if (folder != null && folder.exists() && folder.isDirectory()) {
             File[] filesInFolder = folder.listFiles();
 
             if (filesInFolder != null) {
@@ -75,77 +110,103 @@ public final class IO {
     public static long getFolderSize(File file) {
         long totalFolderSize = 0;
 
-        if (!file.exists() || !file.isDirectory()) {
+        if (file == null || !file.exists() || !file.isDirectory()) {
             L.w("File does not exist or not a folder");
 
             return totalFolderSize;
         }
 
         File[] filesInFolder = file.listFiles();
-        for (File f : filesInFolder) {
-            if (f.isDirectory()) {
-                totalFolderSize += getFolderSize(f);
-            } else {
-                totalFolderSize += f.length();
+        if (filesInFolder != null) {
+            for (File f : filesInFolder) {
+                if (f.isDirectory()) {
+                    totalFolderSize += getFolderSize(f);
+                } else {
+                    totalFolderSize += f.length();
+                }
             }
         }
 
         return totalFolderSize;
     }
 
+    /**
+     * Deletes folder and files and folders inside.
+     *
+     * @return {@code true} if this folder was deleted, {@code false} otherwise.
+     */
     public static boolean deleteFolder(String pathToFolder) {
-        return deleteFolder(new File(pathToFolder));
+        return !Utils.isEmpty(pathToFolder) && deleteFolder(new File(pathToFolder));
     }
 
+    /**
+     * Deletes folder and all files and folders inside.
+     *
+     * @return {@code true} if this folder was deleted, {@code false} otherwise.
+     */
     public static boolean deleteFolder(File folder) {
-        deleteFilesInFolder(folder);
-
-        return folder.delete();
+        if (folder != null && folder.isDirectory()) {
+            deleteFilesInFolder(folder, true);
+            return folder.delete();
+        } else {
+            return false;
+        }
     }
 
-    public static void deleteFilesInFolder(File folder) {
-        File[] files = folder.listFiles();
-        if (files != null) {
-            for (File f : files) {
-                if (f.isDirectory()) {
-                    deleteFolder(f);
-                } else {
-                    //noinspection ResultOfMethodCallIgnored
-                    f.delete();
+    /**
+     * Deletes all files in folder.
+     *
+     * @param deleteFoldersInside delete folders inside
+     */
+    public static void deleteFilesInFolder(File folder, boolean deleteFoldersInside) {
+        if (folder != null && folder.isDirectory()) {
+            File[] files = folder.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    if (f.isDirectory()) {
+                        deleteFolder(f);
+                    } else {
+                        //noinspection ResultOfMethodCallIgnored
+                        deleteFile(f);
+                    }
                 }
             }
         }
     }
 
-    public static long getApkSize() {
-        long apkSize;
-
-        File apk = new File(Utils.getApp().getPackageCodePath());
-        apkSize = apk.length();
-
-        return apkSize;
+    public static boolean deleteFile(String path) {
+        return !Utils.isEmpty(path) && deleteFile(new File(path));
     }
 
-    public static String getFormattedFileSize(long size) {
-        return Formatter.formatFileSize(Utils.getApp(), size);
-    }
-
-    public static boolean removeFile(String path) {
-        return removeFile(new File(path));
-    }
-
-    public static boolean removeFile(File file) {
+    public static boolean deleteFile(File file) {
         boolean deleted = false;
 
         if (file != null) {
             deleted = file.delete();
-        }
-
-        if (!deleted) {
-            L.i("failed to remove " + (file != null ? file.getPath() : "null"));
+            if (!deleted) {
+                L.i("failed to delete " + (file.getPath()));
+            }
         }
 
         return deleted;
+    }
+
+    /**
+     * Deletes all files in folder.
+     *
+     * @param deleteFoldersInside delete folders inside
+     */
+    public static void deleteFiles(boolean deleteFoldersInside, File... files) {
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory() && deleteFoldersInside) {
+                    deleteFolder(file);
+                } else {
+                    //noinspection ResultOfMethodCallIgnored
+                    deleteFile(file);
+                }
+            }
+        }
     }
 
     public static void copyFile(String srcPath, String targetPath) throws IOException {

@@ -406,7 +406,16 @@ public final class L {
 
         File logsDir = getLogsDir();
         if (logsDir != null) {
-            for (File file : logsDir.listFiles()) {
+            deleteFiles(logsDir.listFiles());
+        } else {
+            e("Can't clear logs, logsDir == null");
+            Toasts.showLong("Can't clear logs, logs directory doesn't exist or unavailable");
+        }
+    }
+
+    private static void deleteFiles(File... files) {
+        if (files != null) {
+            for (File file : files) {
                 // we don't create directories here, so we don't delete them.
                 if (!file.isDirectory()) {
                     if (!file.delete()) {
@@ -415,9 +424,6 @@ public final class L {
                     }
                 }
             }
-        } else {
-            e("Can't clear logs, logsDir == null");
-            Toasts.showLong("Can't clear logs, logs directory doesn't exist or unavailable");
         }
     }
 

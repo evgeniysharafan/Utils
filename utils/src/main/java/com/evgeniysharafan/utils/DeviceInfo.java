@@ -183,10 +183,14 @@ public final class DeviceInfo {
             activityManager.getMemoryInfo(mi);
 
             return new StringBuilder(100)
-                    .append("Total RAM: ").append(Utils.hasJellyBean() ? mi.totalMem / 1048576L : 0).append(" MB \n")
-                    .append("Available RAM: ").append(mi.availMem / 1048576L).append(" MB \n")
-                    .append("Threshold RAM: ").append(mi.threshold / 1048576L).append(" MB \n")
-                    .append("Low memory: ").append(mi.lowMemory)
+                    .append("Total RAM: ").append(Utils.hasJellyBean() ? IO.getFormattedFileSize(mi.totalMem) : "0")
+                    .append("\n")
+                    .append("Available RAM: ").append(IO.getFormattedFileSize(mi.availMem)).append("\n")
+                    .append("Threshold RAM: ").append(IO.getFormattedFileSize(mi.threshold)).append("\n")
+                    .append("Low memory: ").append(mi.lowMemory).append("\n")
+                    .append("Free internal space: ").append(IO.getFormattedFileSize(IO.getFreeInternalSpace()))
+                    .append("\n")
+                    .append("Free external space: ").append(IO.getFormattedFileSize(IO.getFreeExternalSpace()))
                     .toString();
         } catch (Exception e) {
             L.w(e);
