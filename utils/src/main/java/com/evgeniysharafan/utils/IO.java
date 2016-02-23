@@ -4,14 +4,19 @@ import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
+import android.support.annotation.Nullable;
+import android.text.format.DateUtils;
 import android.text.format.Formatter;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
@@ -182,7 +187,7 @@ public final class IO {
      * Sorts all files in the folder by last modified and deletes the oldest ones. Remains remainLatestFilesCount.
      * It's useful if you need to shrink your cache.
      */
-    public static void deleteFilesInFolder(File folder, int remainLatestFilesCount, boolean deleteFoldersInside) {
+    public static void deleteFilesInFolderRemainCount(File folder, int remainLatestFilesCount, boolean deleteFoldersInside) {
         if (folder != null && folder.isDirectory()) {
             File[] files = folder.listFiles();
             if (files != null) {
@@ -201,10 +206,20 @@ public final class IO {
 
     /**
      * Sorts all files in the folder by last modified and deletes the oldest ones.
-     * Remains files last modified after beforeDateInMillis.
+     * Remains remainFilesForDays.
      * It's useful if you need to shrink your cache.
      */
-    public static void deleteFilesInFolder(File folder, long beforeDateInMillis, boolean deleteFoldersInside) {
+    public static void deleteFilesInFolderRemainDays(File folder, int remainFilesForDays, boolean deleteFoldersInside) {
+        deleteFilesInFolderBeforeDate(folder, System.currentTimeMillis() - DateUtils.DAY_IN_MILLIS * remainFilesForDays,
+                deleteFoldersInside);
+    }
+
+    /**
+     * Sorts all files in the folder by last modified and deletes the oldest ones.
+     * Deletes files last modified beforeDateInMillis.
+     * It's useful if you need to shrink your cache.
+     */
+    public static void deleteFilesInFolderBeforeDate(File folder, long beforeDateInMillis, boolean deleteFoldersInside) {
         if (folder != null && folder.isDirectory()) {
             File[] files = folder.listFiles();
             if (files != null) {
@@ -344,16 +359,46 @@ public final class IO {
                 sb.append(line);
             }
         } finally {
-            try {
-                if (buf != null) {
-                    buf.close();
-                }
-            } catch (Exception e) {
-                // ignore
-            }
+            closeQuietly(buf);
         }
 
         return sb.toString();
+    }
+
+    public static byte[] toByteArray(InputStream input) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024 * 4];
+
+        int n;
+        while (-1 != (n = input.read(buffer))) {
+            byteArrayOutputStream.write(buffer, 0, n);
+        }
+
+        return byteArrayOutputStream.toByteArray();
+    }
+
+    public static void close(@Nullable Closeable closeable, boolean swallowIOException) throws IOException {
+        if (closeable == null) {
+            return;
+        }
+
+        try {
+            closeable.close();
+        } catch (IOException e) {
+            if (swallowIOException) {
+                L.w(e, "IOException thrown while closing Closeable.");
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    public static void closeQuietly(@Nullable Closeable closeable) {
+        try {
+            close(closeable, true);
+        } catch (IOException e) {
+            L.w(e, "IOException should not have been thrown.");
+        }
     }
 
     public static void createNomediaFileIfNeeded(File folder) {

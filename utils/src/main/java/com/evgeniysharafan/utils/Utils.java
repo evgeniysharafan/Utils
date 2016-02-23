@@ -301,6 +301,18 @@ public final class Utils {
         return Looper.getMainLooper().getThread() == Thread.currentThread();
     }
 
+    public static void checkMain() {
+        if (!isMainThread()) {
+            throw new IllegalStateException("Method call should happen from the main thread.");
+        }
+    }
+
+    public static void checkNotMain() {
+        if (isMainThread()) {
+            throw new IllegalStateException("Method call should not happen from the main thread.");
+        }
+    }
+
     public static boolean isCharging(Context context) {
         Intent intent = context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         if (intent != null) {
