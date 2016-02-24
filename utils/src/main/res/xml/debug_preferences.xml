@@ -22,8 +22,8 @@
         android:title="@string/title_debug_send_logs" />
 
     <Preference
-        android:key="@string/key_debug_clear_logs_folder"
-        android:title="@string/title_debug_clear_logs_folder" />
+        android:key="@string/key_debug_clear_logs_directory"
+        android:title="@string/title_debug_clear_logs_directory" />
 
     <Preference
         android:enabled="false"

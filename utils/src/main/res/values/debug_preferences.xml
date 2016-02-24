@@ -3,7 +3,7 @@
     <string name="key_debug_settings">key_debug_settings</string>
     <string name="title_debug_settings">Debug settings</string>
     <string name="summary_debug_settings">For debug builds only</string>
-    <string name="summary_debug_logs_folder_empty">Logs folder is empty</string>
+    <string name="summary_debug_logs_directory_empty">Logs directory is empty</string>
     <string name="summary_debug_disable_writing_logs">Disable writing logs item to enable this one</string>
 
     <string name="key_debug_send_feedback">key_debug_send_feedback</string>
@@ -26,9 +26,9 @@
         <item quantity="other">Send %d log files to developers</item>
     </plurals>
 
-    <string name="key_debug_clear_logs_folder">key_debug_clear_logs_folder</string>
-    <string name="title_debug_clear_logs_folder">Clear logs folder</string>
-    <plurals name="summary_debug_clear_logs_folder">
+    <string name="key_debug_clear_logs_directory">key_debug_clear_logs_directory</string>
+    <string name="title_debug_clear_logs_directory">Clear logs directory</string>
+    <plurals name="summary_debug_clear_logs_directory">
         <item quantity="one">Delete 1 log file</item>
         <item quantity="other">Delete %d log files</item>
     </plurals>

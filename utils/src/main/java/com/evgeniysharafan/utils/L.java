@@ -401,7 +401,7 @@ public final class L {
         }
     }
 
-    public static void clearLogsFolder() {
+    public static void clearLogsDirectory() {
         setNeedWriteToFile(false, false);
 
         File logsDir = getLogsDir();

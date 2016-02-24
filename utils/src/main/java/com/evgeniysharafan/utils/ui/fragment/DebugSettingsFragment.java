@@ -91,7 +91,7 @@ public class DebugSettingsFragment extends PreferenceFragment implements OnPrefe
         sendLogs = findPreference(Res.getString(R.string.key_debug_send_logs));
         sendLogs.setOnPreferenceClickListener(this);
 
-        clearLogs = findPreference(Res.getString(R.string.key_debug_clear_logs_folder));
+        clearLogs = findPreference(Res.getString(R.string.key_debug_clear_logs_directory));
         clearLogs.setOnPreferenceClickListener(this);
 
         versionName = findPreference(Res.getString(R.string.key_debug_version_name));
@@ -115,11 +115,11 @@ public class DebugSettingsFragment extends PreferenceFragment implements OnPrefe
         } else {
             int quantity = L.getLogsQuantity();
             if (quantity == 0) {
-                sendLogs.setSummary(R.string.summary_debug_logs_folder_empty);
-                clearLogs.setSummary(R.string.summary_debug_logs_folder_empty);
+                sendLogs.setSummary(R.string.summary_debug_logs_directory_empty);
+                clearLogs.setSummary(R.string.summary_debug_logs_directory_empty);
             } else {
                 sendLogs.setSummary(Res.getQuantityString(R.plurals.summary_debug_send_logs, quantity, quantity));
-                clearLogs.setSummary(Res.getQuantityString(R.plurals.summary_debug_clear_logs_folder, quantity, quantity));
+                clearLogs.setSummary(Res.getQuantityString(R.plurals.summary_debug_clear_logs_directory, quantity, quantity));
             }
 
             sendLogs.setEnabled(quantity > 0);
@@ -144,8 +144,8 @@ public class DebugSettingsFragment extends PreferenceFragment implements OnPrefe
             DeviceInfo.sendDeviceInfoToEmail(getActivity(), getEmailsForSending());
         } else if (key.equals(Res.getString(R.string.key_debug_send_logs))) {
             L.sendLogsToEmail(getActivity(), getEmailsForSending());
-        } else if (key.equals(Res.getString(R.string.key_debug_clear_logs_folder))) {
-            L.clearLogsFolder();
+        } else if (key.equals(Res.getString(R.string.key_debug_clear_logs_directory))) {
+            L.clearLogsDirectory();
             update();
         }
 

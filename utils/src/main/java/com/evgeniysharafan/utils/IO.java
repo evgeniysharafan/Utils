@@ -40,15 +40,12 @@ public final class IO {
      * @return free space in bytes. 0 if storage is unmounted.
      */
     public static long getFreeExternalSpace() {
-        long freeSpace = 0;
-
-        if (isMediaStorageMounted()) {
-            freeSpace = getFreeSpace(Environment.getExternalStorageDirectory());
-        } else {
+        if (!isMediaStorageMounted()) {
             L.w("Media storage is unmounted");
+            return 0;
         }
 
-        return freeSpace;
+        return getFreeSpace(Environment.getExternalStorageDirectory());
     }
 
     /**
@@ -63,15 +60,16 @@ public final class IO {
      */
     @SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public static long getFreeSpace(File path) {
-        long freeSpace;
+    public static long getFreeSpace(File file) {
+        if (!checkFileNotNull(file)) {
+            return 0;
+        }
 
-        StatFs stat = new StatFs(path.getPath());
+        StatFs stat = new StatFs(file.getPath());
         long blockSize = Utils.hasJellyBeanMr2() ? stat.getBlockSizeLong() : stat.getBlockSize();
         long availableBlocks = Utils.hasJellyBeanMr2() ? stat.getAvailableBlocksLong() : stat.getAvailableBlocks();
-        freeSpace = availableBlocks * blockSize;
 
-        return freeSpace;
+        return availableBlocks * blockSize;
     }
 
     public static long getApkSize() {
@@ -100,152 +98,166 @@ public final class IO {
         return Formatter.formatShortFileSize(Utils.getApp(), sizeInBytes);
     }
 
-    public static int getFilesCountInDirectory(File folder) {
-        int count = 0;
+    public static int getFilesCountInDir(File dir) {
+        if (!checkDirExists(dir)) {
+            return 0;
+        }
 
-        if (folder != null && folder.exists() && folder.isDirectory()) {
-            File[] filesInFolder = folder.listFiles();
+        File[] filesInDir = dir.listFiles();
+        if (!checkFilesArrayNotNull(filesInDir)) {
+            return 0;
+        }
 
-            if (filesInFolder != null) {
-                count = filesInFolder.length;
+        return filesInDir.length;
+    }
+
+    public static long getDirSize(File dir) {
+        if (!checkDirExists(dir)) {
+            return 0;
+        }
+
+        File[] filesInDir = dir.listFiles();
+        if (!checkFilesArrayNotNull(filesInDir)) {
+            return 0;
+        }
+
+        long totalDirSize = 0;
+        for (File f : filesInDir) {
+            if (f.isDirectory()) {
+                totalDirSize += getDirSize(f);
+            } else {
+                totalDirSize += f.length();
             }
         }
 
-        return count;
-    }
-
-    public static long getFolderSize(File file) {
-        long totalFolderSize = 0;
-
-        if (file == null || !file.exists() || !file.isDirectory()) {
-            L.w("File does not exist or not a folder");
-
-            return totalFolderSize;
-        }
-
-        File[] filesInFolder = file.listFiles();
-        if (filesInFolder != null) {
-            for (File f : filesInFolder) {
-                if (f.isDirectory()) {
-                    totalFolderSize += getFolderSize(f);
-                } else {
-                    totalFolderSize += f.length();
-                }
-            }
-        }
-
-        return totalFolderSize;
+        return totalDirSize;
     }
 
     /**
-     * Deletes folder and files and folders inside.
+     * Deletes dir and files and dirs inside.
      *
-     * @return {@code true} if this folder was deleted, {@code false} otherwise.
+     * @return {@code true} if this dir was deleted, {@code false} otherwise.
      */
-    public static boolean deleteFolder(String pathToFolder) {
-        return !Utils.isEmpty(pathToFolder) && deleteFolder(new File(pathToFolder));
+    public static boolean deleteDir(String pathToDir) {
+        return checkPathNotEmpty(pathToDir) && deleteDir(new File(pathToDir));
     }
 
     /**
-     * Deletes folder and all files and folders inside.
+     * Deletes dir and all files and dirs inside.
      *
-     * @return {@code true} if this folder was deleted, {@code false} otherwise.
+     * @return {@code true} if this dir was deleted, {@code false} otherwise.
      */
-    public static boolean deleteFolder(File folder) {
-        if (folder != null && folder.isDirectory()) {
-            deleteFilesInFolder(folder, true);
-            return folder.delete();
-        } else {
+    public static boolean deleteDir(File dir) {
+        if (!checkDirExists(dir)) {
             return false;
         }
+
+        deleteFilesInDir(dir, true);
+        return deleteFile(dir);
     }
 
     /**
-     * Deletes all files in folder.
+     * Deletes all files in dir.
      *
-     * @param deleteFoldersInside delete folders inside
+     * @param deleteDirsInside delete dirs inside
      */
-    public static void deleteFilesInFolder(File folder, boolean deleteFoldersInside) {
-        if (folder != null && folder.isDirectory()) {
-            File[] files = folder.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    if (file.isDirectory()) {
-                        if (deleteFoldersInside) {
-                            deleteFolder(file);
-                        }
-                    } else {
-                        //noinspection ResultOfMethodCallIgnored
-                        deleteFile(file);
-                    }
+    public static void deleteFilesInDir(File dir, boolean deleteDirsInside) {
+        if (!checkDirExists(dir)) {
+            return;
+        }
+
+        File[] filesInDir = dir.listFiles();
+        if (!checkFilesArrayNotNull(filesInDir)) {
+            return;
+        }
+
+        for (File file : filesInDir) {
+            if (file.isDirectory()) {
+                if (deleteDirsInside) {
+                    deleteDir(file);
                 }
+            } else {
+                //noinspection ResultOfMethodCallIgnored
+                deleteFile(file);
             }
         }
     }
 
     /**
-     * Sorts all files in the folder by last modified and deletes the oldest ones. Remains remainLatestFilesCount.
+     * Sorts all files in the dir by last modified and deletes the oldest ones. Remains remainLatestFilesCount.
      * It's useful if you need to shrink your cache.
      */
-    public static void deleteFilesInFolderRemainCount(File folder, int remainLatestFilesCount, boolean deleteFoldersInside) {
-        if (folder != null && folder.isDirectory()) {
-            File[] files = folder.listFiles();
-            if (files != null) {
-                if (files.length > remainLatestFilesCount) {
-                    sortByLastModified(files);
+    public static void deleteFilesInDirRemainCount(File dir, int remainLatestFilesCount, boolean deleteDirsInside) {
+        if (!checkDirExists(dir)) {
+            return;
+        }
 
-                    int filesForDeletionLength = files.length - remainLatestFilesCount;
-                    File[] filesForDeletion = new File[filesForDeletionLength];
+        File[] filesInDir = dir.listFiles();
+        if (!checkFilesArrayNotNull(filesInDir)) {
+            return;
+        }
 
-                    System.arraycopy(files, 0, filesForDeletion, 0, filesForDeletionLength);
-                    deleteFiles(filesForDeletion, deleteFoldersInside);
-                }
-            }
+        if (filesInDir.length > remainLatestFilesCount) {
+            sortByLastModified(filesInDir);
+
+            int filesForDeletionLength = filesInDir.length - remainLatestFilesCount;
+            File[] filesForDeletion = new File[filesForDeletionLength];
+
+            System.arraycopy(filesInDir, 0, filesForDeletion, 0, filesForDeletionLength);
+            deleteFiles(filesForDeletion, deleteDirsInside);
         }
     }
 
     /**
-     * Sorts all files in the folder by last modified and deletes the oldest ones.
+     * Sorts all files in the dir by last modified and deletes the oldest ones.
      * Remains remainFilesForDays.
      * It's useful if you need to shrink your cache.
      */
-    public static void deleteFilesInFolderRemainDays(File folder, int remainFilesForDays, boolean deleteFoldersInside) {
-        deleteFilesInFolderBeforeDate(folder, System.currentTimeMillis() - DateUtils.DAY_IN_MILLIS * remainFilesForDays,
-                deleteFoldersInside);
+    public static void deleteFilesInDirRemainDays(File dir, int remainFilesForDays, boolean deleteDirsInside) {
+        deleteFilesInDirBeforeDate(dir, System.currentTimeMillis() - DateUtils.DAY_IN_MILLIS * remainFilesForDays,
+                deleteDirsInside);
     }
 
     /**
-     * Sorts all files in the folder by last modified and deletes the oldest ones.
+     * Sorts all files in the dir by last modified and deletes the oldest ones.
      * Deletes files last modified beforeDateInMillis.
      * It's useful if you need to shrink your cache.
      */
-    public static void deleteFilesInFolderBeforeDate(File folder, long beforeDateInMillis, boolean deleteFoldersInside) {
-        if (folder != null && folder.isDirectory()) {
-            File[] files = folder.listFiles();
-            if (files != null) {
-                sortByLastModified(files);
+    public static void deleteFilesInDirBeforeDate(File dir, long beforeDateInMillis, boolean deleteDirsInside) {
+        if (!checkDirExists(dir)) {
+            return;
+        }
 
-                int filesForDeletionLength = 0;
-                for (File file : files) {
-                    if (file.lastModified() < beforeDateInMillis) {
-                        filesForDeletionLength++;
-                    }
-                }
+        File[] filesInDir = dir.listFiles();
+        if (!checkFilesArrayNotNull(filesInDir)) {
+            return;
+        }
 
-                if (filesForDeletionLength > 0) {
-                    File[] filesForDeletion = new File[filesForDeletionLength];
-                    System.arraycopy(files, 0, filesForDeletion, 0, filesForDeletionLength);
-                    deleteFiles(filesForDeletion, deleteFoldersInside);
-                }
+        sortByLastModified(filesInDir);
+
+        int filesForDeletionLength = 0;
+        for (File file : filesInDir) {
+            if (file.lastModified() < beforeDateInMillis) {
+                filesForDeletionLength++;
             }
+        }
+
+        if (filesForDeletionLength > 0) {
+            File[] filesForDeletion = new File[filesForDeletionLength];
+            System.arraycopy(filesInDir, 0, filesForDeletion, 0, filesForDeletionLength);
+            deleteFiles(filesForDeletion, deleteDirsInside);
         }
     }
 
     /**
      * The oldest files will be at the beginning of the array
      */
-    public static void sortByLastModified(File[] array) {
-        Arrays.sort(array, new Comparator<File>() {
+    public static void sortByLastModified(File[] files) {
+        if (!checkFilesArrayNotNull(files)) {
+            return;
+        }
+
+        Arrays.sort(files, new Comparator<File>() {
             @Override
             public int compare(File lhs, File rhs) {
                 return lhs.lastModified() > rhs.lastModified() ? 1
@@ -255,64 +267,76 @@ public final class IO {
     }
 
     public static boolean deleteFile(String path) {
-        return !Utils.isEmpty(path) && deleteFile(new File(path));
+        return checkPathNotEmpty(path) && deleteFile(new File(path));
     }
 
     public static boolean deleteFile(File file) {
-        boolean deleted = false;
+        if (!checkFileNotNull(file)) {
+            return false;
+        }
 
-        if (file != null) {
-            deleted = file.delete();
-            if (!deleted) {
-                L.i("failed to delete " + (file.getPath()));
-            }
+        boolean deleted = file.delete();
+        if (!deleted) {
+            L.i("failed to delete " + file);
         }
 
         return deleted;
     }
 
     /**
-     * Deletes all files in folder.
+     * Deletes all files in dir.
      *
-     * @param deleteFoldersInside delete folders inside
+     * @param deleteDirsInside delete dirs inside
      */
-    public static void deleteFiles(File[] files, boolean deleteFoldersInside) {
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    if (deleteFoldersInside) {
-                        deleteFolder(file);
-                    }
-                } else {
-                    //noinspection ResultOfMethodCallIgnored
-                    deleteFile(file);
+    public static void deleteFiles(File[] files, boolean deleteDirsInside) {
+        if (!checkFilesArrayNotNull(files)) {
+            return;
+        }
+
+        for (File file : files) {
+            if (file.isDirectory()) {
+                if (deleteDirsInside) {
+                    deleteDir(file);
                 }
+            } else {
+                //noinspection ResultOfMethodCallIgnored
+                deleteFile(file);
             }
         }
     }
 
     public static void copyFile(String srcPath, String targetPath) throws IOException {
-        copyFile(new File(srcPath), new File(targetPath));
+        if (checkPathNotEmpty(srcPath) && checkPathNotEmpty(targetPath)) {
+            copyFile(new File(srcPath), new File(targetPath));
+        }
     }
 
     public static void copyFile(File srcFile, File targetFile) throws IOException {
-        FileChannel inChannel = new FileInputStream(srcFile).getChannel();
-        FileChannel outChannel = new FileOutputStream(targetFile).getChannel();
+        if (checkFileNotNull(srcFile) && checkFileNotNull(targetFile)) {
+            FileChannel inChannel = new FileInputStream(srcFile).getChannel();
+            FileChannel outChannel = new FileOutputStream(targetFile).getChannel();
 
-        //noinspection TryFinallyCanBeTryWithResources
-        try {
-            inChannel.transferTo(0, inChannel.size(), outChannel);
-        } finally {
-            inChannel.close();
-            outChannel.close();
+            //noinspection TryFinallyCanBeTryWithResources
+            try {
+                inChannel.transferTo(0, inChannel.size(), outChannel);
+            } finally {
+                inChannel.close();
+                outChannel.close();
+            }
         }
     }
 
     public static void writeFile(String data, File file) throws IOException {
-        writeFile(data.getBytes(Charset.forName("UTF-8")), file);
+        if (!Utils.isEmpty(data) && checkFileNotNull(file)) {
+            writeFile(data.getBytes(Charset.forName("UTF-8")), file);
+        }
     }
 
     public static void writeFile(byte[] data, File file) throws IOException {
+        if (data == null || !checkFileNotNull(file)) {
+            return;
+        }
+
         BufferedOutputStream bos = null;
 
         try {
@@ -344,15 +368,23 @@ public final class IO {
         return sb.toString();
     }
 
-    public static String readFileAsString(String path) throws IOException {
-        return readFileAsString(new File(path));
+    public static String readFileAsString(String pathToFile) throws IOException {
+        if (!checkPathNotEmpty(pathToFile)) {
+            return "";
+        }
+
+        return readFileAsString(new File(pathToFile));
     }
 
-    public static String readFileAsString(File f) throws IOException {
+    public static String readFileAsString(File file) throws IOException {
+        if (!checkFileNotNull(file) || file.isDirectory()) {
+            return "";
+        }
+
         StringBuilder sb = new StringBuilder();
         BufferedReader buf = null;
         try {
-            buf = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
+            buf = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
 
             String line;
             while ((line = buf.readLine()) != null) {
@@ -394,6 +426,10 @@ public final class IO {
     }
 
     public static void closeQuietly(@Nullable Closeable closeable) {
+        if (closeable == null) {
+            return;
+        }
+
         try {
             close(closeable, true);
         } catch (IOException e) {
@@ -401,8 +437,12 @@ public final class IO {
         }
     }
 
-    public static void createNomediaFileIfNeeded(File folder) {
-        File nomediaFile = new File(folder, ".nomedia");
+    public static void createNomediaFileIfNeeded(File dir) {
+        if (!checkDirExists(dir)) {
+            return;
+        }
+
+        File nomediaFile = new File(dir, ".nomedia");
         L.d("path to nomediaFile = " + nomediaFile.getPath());
 
         if (!nomediaFile.exists()) {
@@ -413,6 +453,42 @@ public final class IO {
                 L.e(e);
             }
         }
+    }
+
+    public static boolean checkPathNotEmpty(String path) {
+        if (Utils.isEmpty(path)) {
+            L.e("Utils.isEmpty(path)");
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean checkFileNotNull(File file) {
+        if (file == null) {
+            L.e("file == null");
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean checkFilesArrayNotNull(File[] files) {
+        if (files == null) {
+            L.e("files == null");
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean checkDirExists(File dir) {
+        if (dir == null || !dir.exists() || !dir.isDirectory()) {
+            L.e("dir == null || !dir.exists() || !dir.isDirectory()");
+            return false;
+        }
+
+        return true;
     }
 
 }

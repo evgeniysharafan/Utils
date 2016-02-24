@@ -33,7 +33,7 @@ To be able to write logs you need to add a permission:
     android:name="android.permission.WRITE_EXTERNAL_STORAGE"
     android:maxSdkVersion="18" />
 ```
-We don't need such permission since API 19 because on Android 4.4+ we can write to our folder without it. Therefore we don't need to check it on Android 6+.
+We don't need such permission since API 19 because on Android 4.4+ we can write to our directory without it. Therefore we don't need to check it on Android 6+.
 
 To be able to attach them to Gmail on Android 6+ devices you need a [FileProvider](http://developer.android.com/intl/ru/reference/android/support/v4/content/FileProvider.html).
 Please add this to your AndroidManifest:
