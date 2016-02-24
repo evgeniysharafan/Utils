@@ -113,9 +113,9 @@ public final class IntentUtils {
                         PackageManager.DONT_KILL_APP);
             }
         } catch (PackageManager.NameNotFoundException e) {
-            L.e("No package info found for our own package.", e);
+            L.e(e, "No package info found for our own package.");
         } catch (ClassNotFoundException e) {
-            L.e("Activity not found within package.", e);
+            L.e(e, "Activity not found within package.");
         }
     }
 

@@ -19,6 +19,8 @@ import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.evgeniysharafan.utils.Res.getString;
+
 /**
  * Logger
  */
@@ -51,30 +53,30 @@ public final class L {
 
     public static void v(int resId) {
         if (Utils.isDebug()) {
-            v(Res.getString(resId));
+            v(getString(resId));
         }
     }
 
     public static void d(int resId) {
         if (Utils.isDebug()) {
-            d(Res.getString(resId));
+            d(getString(resId));
         }
     }
 
     public static void i(int resId) {
-        i(Res.getString(resId));
+        i(getString(resId));
     }
 
     public static void w(int resId) {
-        w(Res.getString(resId));
+        w(getString(resId));
     }
 
     public static void e(int resId) {
-        e(Res.getString(resId));
+        e(getString(resId));
     }
 
     public static void wtf(int resId) {
-        wtf(Res.getString(resId));
+        wtf(getString(resId));
     }
 
     public static void v(String msg, Object... args) {
@@ -110,12 +112,12 @@ public final class L {
         log(Log.ERROR, msg, args);
     }
 
-    public static void e(String msg, Throwable throwable) {
-        log(Log.ERROR, msg);
+    public static void e(Throwable throwable) {
         log(Log.ERROR, throwable);
     }
 
-    public static void e(Throwable throwable) {
+    public static void e(Throwable throwable, String msg, Object... args) {
+        log(Log.ERROR, msg, args);
         log(Log.ERROR, throwable);
     }
 

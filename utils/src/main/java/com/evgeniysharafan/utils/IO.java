@@ -320,8 +320,8 @@ public final class IO {
             try {
                 inChannel.transferTo(0, inChannel.size(), outChannel);
             } finally {
-                inChannel.close();
-                outChannel.close();
+                closeQuietly(inChannel);
+                closeQuietly(outChannel);
             }
         }
     }
@@ -343,13 +343,7 @@ public final class IO {
             bos = new BufferedOutputStream(new FileOutputStream(file, false));
             bos.write(data);
         } finally {
-            try {
-                if (bos != null) {
-                    bos.close();
-                }
-            } catch (Exception e) {
-                //ignore
-            }
+            closeQuietly(bos);
         }
     }
 
