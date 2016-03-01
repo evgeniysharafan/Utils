@@ -31,6 +31,8 @@ public final class L {
     private static final int MAX_MESSAGE_LENGTH = 100000;
     private static final String LOGS_FILE_PROVIDER_SUFFIX = ".logsfileprovider";
 
+    private static final String STATE_NEED_WRITE_TO_FILE = "state_need_write_to_file";
+
     private static String tag;
     private static String loggerClassName;
 
@@ -48,7 +50,11 @@ public final class L {
         tag = L.class.getSimpleName();
         loggerClassName = L.class.getName();
 
-        log(Log.VERBOSE, "L logging is enabled, isDebug = " + Utils.isDebug());
+        boolean needWrite = PrefUtils.getBool(STATE_NEED_WRITE_TO_FILE, false);
+        log(Log.VERBOSE, "L logging is enabled, isDebug = %s, needWriteToFile = %s", Utils.isDebug(), needWrite);
+
+        // we pass true as the second param because we need only the first one.
+        setNeedWriteToFile(needWrite, true);
     }
 
     public static void v(int resId) {
@@ -296,6 +302,8 @@ public final class L {
 
     public static void setNeedWriteToFile(boolean needWrite, boolean writeInRelease) {
         needWriteToFile = needWrite && (writeInRelease || Utils.isDebug());
+        PrefUtils.put(STATE_NEED_WRITE_TO_FILE, needWriteToFile);
+
         if (needWriteToFile) {
             initWriteToFile();
         }

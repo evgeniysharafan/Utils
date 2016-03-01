@@ -2,7 +2,6 @@ package com.evgeniysharafan.utils;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.database.Cursor;
@@ -251,25 +250,25 @@ public final class ContactUtils {
         activity.startActivity(addContactIntent);
     }
 
-    public static CursorLoader createStrequentLoader(Context context) {
-        return new CursorLoader(context, ContactsQuery.CONTENT_STREQUENT_URI, ContactsQuery.PROJECTION, null, null,
+    public static CursorLoader createStrequentLoader() {
+        return new CursorLoader(Utils.getApp(), ContactsQuery.CONTENT_STREQUENT_URI, ContactsQuery.PROJECTION, null, null,
                 ContactsQuery.STARRED_ORDER);
     }
 
-    public static CursorLoader createStarredLoader(Context context) {
-        return new CursorLoader(context, ContactsQuery.CONTENT_URI, ContactsQuery.PROJECTION,
+    public static CursorLoader createStarredLoader() {
+        return new CursorLoader(Utils.getApp(), ContactsQuery.CONTENT_URI, ContactsQuery.PROJECTION,
                 ContactsQuery.STARRED_SELECTION, ContactsQuery.SELECTION_ARGS_1, ContactsQuery.STARRED_ORDER);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public static CursorLoader createStrequentPhoneOnlyLoader(Context context) {
-        return new CursorLoader(context, ContactsStrequentQuery.CONTENT_STREQUENT_PHONE_ONLY_URI,
+    public static CursorLoader createStrequentPhoneOnlyLoader() {
+        return new CursorLoader(Utils.getApp(), ContactsStrequentQuery.CONTENT_STREQUENT_PHONE_ONLY_URI,
                 ContactsStrequentQuery.STREQUENT_PHONE_ONLY_PROJECTION, null, null, null);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public static CursorLoader createFrequentLoader(Context context) {
-        return new CursorLoader(context, ContactsQuery.CONTENT_FREQUENT_URI, ContactsQuery.PROJECTION,
+    public static CursorLoader createFrequentLoader() {
+        return new CursorLoader(Utils.getApp(), ContactsQuery.CONTENT_FREQUENT_URI, ContactsQuery.PROJECTION,
                 ContactsQuery.STARRED_SELECTION, ContactsQuery.SELECTION_ARGS_0, null);
     }
 
@@ -318,9 +317,9 @@ public final class ContactUtils {
         return name;
     }
 
-    public static int getThumbnailSize(Context context) {
+    public static int getThumbnailSize() {
         if (sThumbnailSize == -1) {
-            final Cursor c = context.getContentResolver().query(
+            final Cursor c = Utils.getApp().getContentResolver().query(
                     ContactsContract.DisplayPhoto.CONTENT_MAX_DIMENSIONS_URI,
                     new String[]{ContactsContract.DisplayPhoto.THUMBNAIL_MAX_DIM}, null, null, null);
 

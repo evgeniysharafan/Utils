@@ -2,6 +2,7 @@ package com.evgeniysharafan.utils;
 
 import android.content.res.AssetManager;
 import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
@@ -36,6 +37,14 @@ public final class Res {
 
     public static DisplayMetrics getDisplayMetrics() {
         return resources.getDisplayMetrics();
+    }
+
+    public static Configuration getConfiguration() {
+        return resources.getConfiguration();
+    }
+
+    public static void updateConfiguration(Configuration config) {
+        resources.updateConfiguration(config, getDisplayMetrics());
     }
 
     public static String getString(int resId) {

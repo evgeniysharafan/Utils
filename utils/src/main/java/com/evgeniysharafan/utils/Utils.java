@@ -77,7 +77,7 @@ public final class Utils {
                 .penaltyLog()
                 .build());
 
-        L.i("StrictMode enabled");
+        L.v("StrictMode enabled");
     }
 
     public static boolean isDebug() {
@@ -313,8 +313,8 @@ public final class Utils {
         }
     }
 
-    public static boolean isCharging(Context context) {
-        Intent intent = context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+    public static boolean isCharging() {
+        Intent intent = Utils.getApp().registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         if (intent != null) {
             int status = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
             return status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL;
@@ -404,13 +404,13 @@ public final class Utils {
         }
     }
 
-    public static boolean isLandscape(Context context) {
-        return context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+    public static boolean isLandscape() {
+        return Res.getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
     }
 
-    public static void copyToClipboard(Context context, CharSequence label, CharSequence text) {
+    public static void copyToClipboard(CharSequence label, CharSequence text) {
         if (TextUtils.isEmpty(text)) return;
-        ClipboardManager clipboardManager = (ClipboardManager) context.getSystemService(
+        ClipboardManager clipboardManager = (ClipboardManager) Utils.getApp().getSystemService(
                 Context.CLIPBOARD_SERVICE);
         ClipData clipData = ClipData.newPlainText(label == null ? "" : label, text);
         clipboardManager.setPrimaryClip(clipData);
