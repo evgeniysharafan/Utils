@@ -295,7 +295,6 @@ public final class L {
     }
 
     public static void setNeedWriteToFile(boolean needWrite, boolean writeInRelease) {
-        // don't write in release build
         needWriteToFile = needWrite && (writeInRelease || Utils.isDebug());
         if (needWriteToFile) {
             initWriteToFile();
@@ -326,6 +325,7 @@ public final class L {
         }
     }
 
+    @Nullable
     private static File getLogsDir() {
         File dataDirPath = Utils.getApp().getExternalFilesDir(null);
         if (dataDirPath != null) {

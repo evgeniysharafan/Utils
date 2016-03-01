@@ -1,3 +1,43 @@
 <resources>
     <string name="app_name">Utils</string>
+
+    <!--Debug settings-->
+    <string name="key_debug_settings" translatable="false">key_debug_settings</string>
+    <string name="title_debug_settings">Debug settings</string>
+    <string name="summary_debug_settings">For debug builds only</string>
+    <string name="summary_debug_logs_directory_empty">Logs directory is empty</string>
+    <string name="summary_debug_disable_writing_logs">Disable writing logs item to enable this one</string>
+
+    <string name="key_debug_send_feedback" translatable="false">key_debug_send_feedback</string>
+    <string name="title_debug_send_feedback">Send feedback (Gmail is preferred)</string>
+    <string name="summary_debug_send_feedback">Issues and improvements</string>
+
+    <string name="key_debug_send_device_info" translatable="false">key_debug_send_device_info</string>
+    <string name="title_debug_send_device_info">Send device info (Gmail is preferred)</string>
+    <string name="summary_debug_send_device_info">Info about device and system</string>
+
+    <string name="key_debug_write_logs_to_file" translatable="false">key_debug_write_logs_to_file</string>
+    <string name="title_debug_write_logs_to_file">Write logs to file</string>
+    <string name="summary_off_debug_write_logs_to_file">Enable it, do the actions which produce an issue, disable, and send logs to developers</string>
+    <string name="summary_on_debug_write_logs_to_file">Writing logs…</string>
+
+    <string name="key_debug_send_logs" translatable="false">key_debug_send_logs</string>
+    <string name="title_debug_send_logs">Send logs (Gmail is preferred)</string>
+    <plurals name="summary_debug_send_logs">
+        <item quantity="one">Send 1 log file to developers</item>
+        <item quantity="other">Send %d log files to developers</item>
+    </plurals>
+
+    <string name="key_debug_clear_logs_directory" translatable="false">key_debug_clear_logs_directory</string>
+    <string name="title_debug_clear_logs_directory">Clear logs directory</string>
+    <plurals name="summary_debug_clear_logs_directory">
+        <item quantity="one">Delete 1 log file</item>
+        <item quantity="other">Delete %d log files</item>
+    </plurals>
+
+    <string name="key_debug_version_name" translatable="false">key_debug_version_name</string>
+    <string name="title_debug_version_name">Version name</string>
+
+    <string name="key_debug_version_code" translatable="false">key_debug_version_code</string>
+    <string name="title_debug_version_code">Version code</string>
 </resources>

@@ -138,13 +138,13 @@ public class DebugSettingsFragment extends PreferenceFragment implements OnPrefe
     @Override
     public boolean onPreferenceClick(Preference preference) {
         String key = preference.getKey();
-        if (key.equals(Res.getString(R.string.key_debug_send_feedback))) {
+        if (key.equals(sendFeedback.getKey())) {
             DeviceInfo.sendFeedbackToEmail(getActivity(), getEmailsForSending());
-        } else if (key.equals(Res.getString(R.string.key_debug_send_device_info))) {
+        } else if (key.equals(sendDeviceInfo.getKey())) {
             DeviceInfo.sendDeviceInfoToEmail(getActivity(), getEmailsForSending());
-        } else if (key.equals(Res.getString(R.string.key_debug_send_logs))) {
+        } else if (key.equals(sendLogs.getKey())) {
             L.sendLogsToEmail(getActivity(), getEmailsForSending());
-        } else if (key.equals(Res.getString(R.string.key_debug_clear_logs_directory))) {
+        } else if (key.equals(clearLogs.getKey())) {
             L.clearLogsDirectory();
             update();
         }
@@ -155,7 +155,7 @@ public class DebugSettingsFragment extends PreferenceFragment implements OnPrefe
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         String key = preference.getKey();
-        if (key.equals(Res.getString(R.string.key_debug_write_logs_to_file))) {
+        if (key.equals(writeLogs.getKey())) {
             L.setNeedWriteToFile((Boolean) newValue, getWriteInRelease());
             update();
         }

@@ -3,6 +3,7 @@ package com.evgeniysharafan.utils;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
 
 import java.util.Map;
@@ -124,6 +125,32 @@ public final class PrefUtils {
 
     public static void put(SharedPreferences preferences, String key, float value) {
         preferences.edit().putFloat(key, value).apply();
+    }
+
+    public static boolean contains(String key) {
+        return contains(defaultPreferences, key);
+    }
+
+    public static boolean contains(SharedPreferences preferences, String key) {
+        return preferences.contains(key);
+    }
+
+    public static void registerOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener listener) {
+        registerOnSharedPreferenceChangeListener(defaultPreferences, listener);
+    }
+
+    public static void registerOnSharedPreferenceChangeListener(SharedPreferences preferences,
+                                                                OnSharedPreferenceChangeListener listener) {
+        preferences.registerOnSharedPreferenceChangeListener(listener);
+    }
+
+    public static void unregisterOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener listener) {
+        unregisterOnSharedPreferenceChangeListener(defaultPreferences, listener);
+    }
+
+    public static void unregisterOnSharedPreferenceChangeListener(SharedPreferences preferences,
+                                                                  OnSharedPreferenceChangeListener listener) {
+        preferences.unregisterOnSharedPreferenceChangeListener(listener);
     }
 
     public static void remove(String key) {

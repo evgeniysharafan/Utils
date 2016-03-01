@@ -22,7 +22,6 @@ import java.io.Writer;
 public final class Res {
 
     private static final Resources resources;
-    private static DisplayMetrics displayMetrics;
 
     static {
         resources = Utils.getApp().getResources();
@@ -36,11 +35,7 @@ public final class Res {
     }
 
     public static DisplayMetrics getDisplayMetrics() {
-        if (displayMetrics == null) {
-            displayMetrics = resources.getDisplayMetrics();
-        }
-
-        return displayMetrics;
+        return resources.getDisplayMetrics();
     }
 
     public static String getString(int resId) {
