@@ -1,6 +1,5 @@
 package com.evgeniysharafan.utils;
 
-import android.view.View;
 import android.widget.Toast;
 
 /**
@@ -51,7 +50,7 @@ public final class Toasts {
     }
 
     public static boolean needShow(Toast toast) {
-        return toast == null || toast.getView().getWindowVisibility() != View.VISIBLE;
+        return toast == null || toast.getView() == null || !toast.getView().isShown();
     }
 
     private static void showFromBackground(final CharSequence text, final int duration) {
