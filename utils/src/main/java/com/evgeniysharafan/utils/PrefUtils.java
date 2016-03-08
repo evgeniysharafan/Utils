@@ -1,6 +1,5 @@
 package com.evgeniysharafan.utils;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -13,11 +12,9 @@ import java.util.Set;
 public final class PrefUtils {
 
     private static final SharedPreferences defaultPreferences;
-    private static final Application app;
 
     static {
-        app = Utils.getApp();
-        defaultPreferences = PreferenceManager.getDefaultSharedPreferences(app);
+        defaultPreferences = PreferenceManager.getDefaultSharedPreferences(Utils.getApp());
     }
 
     private PrefUtils() {
@@ -28,7 +25,7 @@ public final class PrefUtils {
     }
 
     public static SharedPreferences get(String name) {
-        return app.getSharedPreferences(name, Context.MODE_PRIVATE);
+        return Utils.getApp().getSharedPreferences(name, Context.MODE_PRIVATE);
     }
 
     public static String getString(String key, String defValue) {

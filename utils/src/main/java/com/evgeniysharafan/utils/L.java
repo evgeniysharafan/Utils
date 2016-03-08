@@ -30,7 +30,6 @@ public final class L {
     private static final int MAX_CHUNK_LENGTH = 2000;
     private static final int MAX_MESSAGE_LENGTH = 100000;
     private static final String LOGS_FILE_PROVIDER_SUFFIX = ".logsfileprovider";
-
     private static final String STATE_NEED_WRITE_TO_FILE = "state_need_write_to_file";
 
     private static String tag;

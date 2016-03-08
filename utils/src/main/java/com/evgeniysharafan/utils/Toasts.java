@@ -1,6 +1,6 @@
 package com.evgeniysharafan.utils;
 
-import android.app.Application;
+import android.view.View;
 import android.widget.Toast;
 
 /**
@@ -11,29 +11,27 @@ public final class Toasts {
 
     private static final String FUTURE_MESSAGE = "This functionality will be implemented in the near future";
 
-    private static final Application app;
-
-    static {
-        app = Utils.getApp();
-    }
-
     private Toasts() {
     }
 
-    public static void showShort(int resId) {
-        showShort(Res.getText(resId));
+    public static Toast showShort(int resId) {
+        return showShort(Res.getText(resId));
     }
 
-    public static void showShort(CharSequence message) {
-        show(message, Toast.LENGTH_SHORT);
+    public static Toast showShort(CharSequence message) {
+        return show(message, Toast.LENGTH_SHORT);
     }
 
-    public static void showLong(int resId) {
-        showLong(Res.getText(resId));
+    public static Toast showLong(int resId) {
+        return showLong(Res.getText(resId));
     }
 
-    public static void showLong(CharSequence message) {
-        show(message, Toast.LENGTH_LONG);
+    public static Toast showLong(CharSequence message) {
+        return show(message, Toast.LENGTH_LONG);
+    }
+
+    public static Toast showFuture() {
+        return show(FUTURE_MESSAGE, Toast.LENGTH_LONG);
     }
 
     public static void showShortFromBackground(int resId) {
@@ -52,12 +50,8 @@ public final class Toasts {
         showFromBackground(message, Toast.LENGTH_LONG);
     }
 
-    public static void showFuture() {
-        show(FUTURE_MESSAGE, Toast.LENGTH_LONG);
-    }
-
-    private static void show(CharSequence text, int duration) {
-        Toast.makeText(app, text, duration).show();
+    public static boolean needShow(Toast toast) {
+        return toast == null || toast.getView().getWindowVisibility() != View.VISIBLE;
     }
 
     private static void showFromBackground(final CharSequence text, final int duration) {
@@ -67,6 +61,12 @@ public final class Toasts {
                 show(text, duration);
             }
         });
+    }
+
+    private static Toast show(CharSequence text, int duration) {
+        Toast toast = Toast.makeText(Utils.getApp(), text, duration);
+        toast.show();
+        return toast;
     }
 
 }
