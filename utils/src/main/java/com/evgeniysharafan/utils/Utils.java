@@ -1,7 +1,6 @@
 package com.evgeniysharafan.utils;
 
 import android.annotation.TargetApi;
-import android.app.Application;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -44,7 +43,7 @@ public final class Utils {
     private static final String PREF_UNIQUE_DEVICE_ID = "pref_unique_device_id";
     private static final String PREF_UUID_INSTALLATION_ID = "pref_uuid_installation_id";
 
-    private static Application app;
+    private static Context app;
     private static Handler uiHandler;
     private static boolean isDebug;
     private static Boolean isTablet;
@@ -54,8 +53,8 @@ public final class Utils {
     private Utils() {
     }
 
-    public static void init(Application app, boolean isDebug) {
-        Utils.app = app;
+    public static void init(Context context, boolean isDebug) {
+        Utils.app = context.getApplicationContext();
         Utils.isDebug = isDebug;
 
         if (isDebug) {
@@ -63,7 +62,7 @@ public final class Utils {
         }
     }
 
-    public static Application getApp() {
+    public static Context getApp() {
         return app;
     }
 
