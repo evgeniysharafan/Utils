@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceScreen;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -30,12 +31,18 @@ public class DebugSettingsActivity extends AppCompatActivity {
     public static void addDebugSettingsIfNeeded(Activity activity, PreferenceScreen screen,
                                                 boolean showInRelease, @Nullable String... emailsForSending) {
         if (Utils.isDebug() || showInRelease) {
+            PreferenceCategory debugCategory = new PreferenceCategory(activity);
+            debugCategory.setTitle(R.string.category_debug_settings);
+            screen.addPreference(debugCategory);
+
             Preference debugSettings = new Preference(activity);
             debugSettings.setKey(Res.getString(R.string.key_debug_settings));
             debugSettings.setTitle(R.string.title_debug_settings);
             debugSettings.setIntent(getIntent(activity, showInRelease, emailsForSending));
-            debugSettings.setSummary(R.string.summary_debug_settings);
-            screen.addPreference(debugSettings);
+            debugSettings.setSummary(showInRelease ? R.string.summary_debug_settings_release :
+                    R.string.summary_debug_settings);
+
+            debugCategory.addPreference(debugSettings);
         }
     }
 

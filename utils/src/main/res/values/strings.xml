@@ -2,9 +2,12 @@
     <string name="app_name">Utils</string>
 
     <!--Debug settings-->
+    <string name="category_debug_settings">Debug</string>
+
     <string name="key_debug_settings" translatable="false">key_debug_settings</string>
     <string name="title_debug_settings">Debug settings</string>
-    <string name="summary_debug_settings">For debug builds only</string>
+    <string name="summary_debug_settings">Write and send logs, send device info. For debug builds only.</string>
+    <string name="summary_debug_settings_release">Write and send logs, send device info</string>
     <string name="summary_debug_logs_directory_empty">Logs directory is empty</string>
     <string name="summary_debug_disable_writing_logs">Disable writing logs item to enable this one</string>
 
