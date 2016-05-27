@@ -53,6 +53,12 @@ public final class Utils {
     private Utils() {
     }
 
+    /**
+     * Call it in your Application's onCreate().
+     * <p>If you have a content provider, you need to call it in provider's onCreate() too
+     * because it call before Application's onCreate().</p>
+     * <p>Example for Application's onCreate(): Utils.init(this, BuildConfig.DEBUG);</p>
+     */
     public static void init(Context context, boolean isDebug) {
         Utils.app = context.getApplicationContext();
         Utils.isDebug = isDebug;
@@ -401,6 +407,10 @@ public final class Utils {
                 v.getViewTreeObserver().removeGlobalOnLayoutListener(listener);
             }
         }
+    }
+
+    public static boolean isPortrait() {
+        return Res.getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
     }
 
     public static boolean isLandscape() {

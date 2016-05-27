@@ -5,8 +5,10 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.widget.ImageView;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -122,12 +124,12 @@ public final class Res {
         return resources.getAssets();
     }
 
-    public static float convertToPixels(float dp) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getDisplayMetrics());
+    public static int convertToPixels(float dp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getDisplayMetrics());
     }
 
-    public static int convertToIntPixels(float dp) {
-        return Math.round(convertToPixels(dp));
+    public static int convertToDips(int px) {
+        return (int) (px / Resources.getSystem().getDisplayMetrics().density);
     }
 
     public static int getStatusBarHeight() {
@@ -139,6 +141,24 @@ public final class Res {
         }
 
         return result;
+    }
+
+    public static void tint(ImageView view, int color) {
+        if (view != null) {
+            view.setImageDrawable(tint(view.getDrawable(), color));
+        }
+    }
+
+    public static Drawable tint(Drawable image, int color) {
+        if (image == null) {
+            return null;
+        }
+
+        // we need this unwrap for old devices (e.g Android 4.1), without this tint works only once.
+        Drawable tintedImage = DrawableCompat.wrap(DrawableCompat.unwrap(image));
+        DrawableCompat.setTint(tintedImage, color);
+
+        return tintedImage;
     }
 
     public static String readAssetAsString(String name) throws IOException {
