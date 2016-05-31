@@ -5,6 +5,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -143,13 +144,13 @@ public final class Res {
         return result;
     }
 
-    public static void tint(ImageView view, int color) {
+    public static void tint(ImageView view, @ColorInt int color) {
         if (view != null) {
             view.setImageDrawable(tint(view.getDrawable(), color));
         }
     }
 
-    public static Drawable tint(Drawable image, int color) {
+    public static Drawable tint(Drawable image, @ColorInt int color) {
         if (image == null) {
             return null;
         }
