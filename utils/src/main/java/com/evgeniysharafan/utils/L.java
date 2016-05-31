@@ -2,9 +2,9 @@ package com.evgeniysharafan.utils;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ShareCompat;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
@@ -14,7 +14,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -377,36 +376,31 @@ public final class L {
         setNeedWriteToFile(false, false);
 
         File logsDir = getLogsDir();
-        if (logsDir != null) {
-            ArrayList<Uri> uris = new ArrayList<>();
-            String fileProviderAuthority = Utils.getPackageName() + LOGS_FILE_PROVIDER_SUFFIX;
+        if (logsDir != null && logsDir.listFiles() != null && logsDir.listFiles().length > 0) {
+            ShareCompat.IntentBuilder builder = ShareCompat.IntentBuilder.from(activity)
+                    .setType("text/plain")
+                    .setSubject(DeviceInfo.getBaseSendSubject() + " logs")
+                    .setText("Describe the issue here please")
+                    .setChooserTitle("Send logs through (Gmail is preferred)…");
 
-            for (File file : logsDir.listFiles()) {
-                Uri uri = FileProvider.getUriForFile(Utils.getApp(), fileProviderAuthority, file);
-                uris.add(uri);
+            if (emails != null) {
+                builder.setEmailTo(emails);
             }
 
-            if (!uris.isEmpty()) {
-                Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-                intent.setType("text/plain");
-
-                if (emails != null) {
-                    intent.putExtra(Intent.EXTRA_EMAIL, emails);
+            try {
+                String fileProviderAuthority = Utils.getPackageName() + LOGS_FILE_PROVIDER_SUFFIX;
+                for (File file : logsDir.listFiles()) {
+                    builder.addStream(FileProvider.getUriForFile(Utils.getApp(), fileProviderAuthority, file));
                 }
-                intent.putExtra(Intent.EXTRA_SUBJECT, DeviceInfo.getBaseSendSubject() + " logs");
-                intent.putExtra(Intent.EXTRA_TEXT, "Describe the issue here please");
-                intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                activity.startActivity(Intent.createChooser(intent, "Send logs through (Gmail is preferred)…"));
-            } else {
-                i("Can't send logs, logsDir is empty");
-                Toasts.showLong("Can't send logs, logs directory is empty");
+            } catch (Exception e) {
+                e(e, "Impossible to get log files");
+                Toasts.showLong("Impossible to get log files: " + e.getMessage());
             }
+
+            builder.startChooser();
         } else {
-            e("Can't send logs, logsDir == null");
-            Toasts.showLong("Can't send logs, logs directory doesn't exist or unavailable");
+            e("Can't send logs, logsDir is empty or doesn't exist or unavailable");
+            Toasts.showLong("Can't send logs, logs directory is empty or doesn't exist or unavailable");
         }
     }
 
