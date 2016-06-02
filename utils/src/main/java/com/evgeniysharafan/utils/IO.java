@@ -485,4 +485,19 @@ public final class IO {
         return true;
     }
 
+    @Nullable
+    public static String readStreamAsString(@NonNull InputStream inputStream) {
+        StringBuilder stringBuilder = new StringBuilder();
+        try {
+            BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            while ((line = r.readLine()) != null) {
+                stringBuilder.append(line).append('\n');
+            }
+        } catch (IOException e) {
+            L.e(e);
+        }
+        return stringBuilder.toString();
+    }
+
 }
