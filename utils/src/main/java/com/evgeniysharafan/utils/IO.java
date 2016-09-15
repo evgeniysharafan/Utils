@@ -375,14 +375,23 @@ public final class IO {
             return "";
         }
 
+        return readStreamAsString(new FileInputStream(file));
+    }
+
+    public static String readStreamAsString(InputStream inputStream) throws IOException {
+        if (inputStream == null) {
+            return "";
+        }
+
         StringBuilder sb = new StringBuilder();
         BufferedReader buf = null;
+
         try {
-            buf = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+            buf = new BufferedReader(new InputStreamReader(inputStream));
 
             String line;
             while ((line = buf.readLine()) != null) {
-                sb.append(line);
+                sb.append(line).append('\n');
             }
         } finally {
             closeQuietly(buf);

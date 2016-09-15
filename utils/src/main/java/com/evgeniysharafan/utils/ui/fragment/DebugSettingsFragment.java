@@ -3,7 +3,7 @@ package com.evgeniysharafan.utils.ui.fragment;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.preference.SwitchPreference;
+import android.preference.TwoStatePreference;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -30,7 +30,7 @@ public class DebugSettingsFragment extends PreferenceFragment implements OnPrefe
 
     private Preference sendFeedback;
     private Preference sendDeviceInfo;
-    private SwitchPreference writeLogs;
+    private TwoStatePreference writeLogs;
     private Preference sendLogs;
     private Preference clearLogs;
     private Preference versionName;
@@ -85,7 +85,7 @@ public class DebugSettingsFragment extends PreferenceFragment implements OnPrefe
         sendDeviceInfo = findPreference(Res.getString(R.string.key_debug_send_device_info));
         sendDeviceInfo.setOnPreferenceClickListener(this);
 
-        writeLogs = (SwitchPreference) findPreference(Res.getString(R.string.key_debug_write_logs_to_file));
+        writeLogs = (TwoStatePreference) findPreference(Res.getString(R.string.key_debug_write_logs_to_file));
         writeLogs.setOnPreferenceChangeListener(this);
 
         sendLogs = findPreference(Res.getString(R.string.key_debug_send_logs));
@@ -104,7 +104,7 @@ public class DebugSettingsFragment extends PreferenceFragment implements OnPrefe
     }
 
     private void update() {
-        writeLogs.setChecked(L.isNeedWriteToFile());
+        writeLogs.setChecked(L.needWriteToFile());
 
         if (writeLogs.isChecked()) {
             sendLogs.setSummary(R.string.summary_debug_disable_writing_logs);

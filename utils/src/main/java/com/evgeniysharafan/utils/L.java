@@ -51,7 +51,7 @@ public final class L {
         boolean needWrite = PrefUtils.getBool(STATE_NEED_WRITE_TO_FILE, false);
         log(Log.VERBOSE, "L logging is enabled, isDebug = %s, needWriteToFile = %s", Utils.isDebug(), needWrite);
 
-        // we pass true as the second param because we need only the first one.
+        // we pass true as the second param because we need only the first one in this case.
         setNeedWriteToFile(needWrite, true);
     }
 
@@ -139,7 +139,7 @@ public final class L {
             return;
         }
 
-        if (isNeedWriteToFile()) {
+        if (needWriteToFile()) {
             logFileBuilder.append(logFileSessionNameFormatter.format(
                     System.currentTimeMillis())).append(": ").append(getLevel(level)).append(": ");
         }
@@ -151,7 +151,7 @@ public final class L {
             String stackTraceStringWithLocation = location + Log.getStackTraceString(throwable);
             Log.println(level, tag, stackTraceStringWithLocation);
 
-            if (isNeedWriteToFile()) {
+            if (needWriteToFile()) {
                 logFileBuilder.append(stackTraceStringWithLocation);
             }
         } else {
@@ -169,7 +169,7 @@ public final class L {
                 Log.println(level, tag, chunkWithLocation);
                 Log.println(level, tag, lengthWithLocation);
 
-                if (isNeedWriteToFile()) {
+                if (needWriteToFile()) {
                     logFileBuilder.append(chunkWithLocation);
                     logFileBuilder.append(lengthWithLocation);
                 }
@@ -177,7 +177,7 @@ public final class L {
                 String chunkWithLocation = location + message.substring(0, MAX_CHUNK_LENGTH);
                 Log.println(level, tag, chunkWithLocation);
 
-                if (isNeedWriteToFile()) {
+                if (needWriteToFile()) {
                     logFileBuilder.append(chunkWithLocation);
                 }
 
@@ -186,13 +186,13 @@ public final class L {
                 String messageWithLocation = location + message;
                 Log.println(level, tag, messageWithLocation);
 
-                if (isNeedWriteToFile()) {
+                if (needWriteToFile()) {
                     logFileBuilder.append(messageWithLocation);
                 }
             }
         }
 
-        if (isNeedWriteToFile()) {
+        if (needWriteToFile()) {
             logFileBuilder.append("\n");
             write(logFileBuilder.toString());
             logFileBuilder.delete(0, logFileBuilder.length());
@@ -294,7 +294,7 @@ public final class L {
         }
     }
 
-    public static boolean isNeedWriteToFile() {
+    public static boolean needWriteToFile() {
         return needWriteToFile;
     }
 
@@ -350,7 +350,7 @@ public final class L {
         logFileExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                if (isNeedWriteToFile()) {
+                if (needWriteToFile()) {
                     BufferedWriter writer = null;
                     try {
                         writer = new BufferedWriter(new FileWriter(logFile, true));

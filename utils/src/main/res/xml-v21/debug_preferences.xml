@@ -10,7 +10,7 @@
         android:summary="@string/summary_debug_send_device_info"
         android:title="@string/title_debug_send_device_info" />
 
-    <CheckBoxPreference
+    <SwitchPreference
         android:defaultValue="false"
         android:key="@string/key_debug_write_logs_to_file"
         android:summaryOff="@string/summary_off_debug_write_logs_to_file"

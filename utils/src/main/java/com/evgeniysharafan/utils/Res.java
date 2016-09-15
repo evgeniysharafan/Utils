@@ -5,8 +5,20 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.ArrayRes;
+import android.support.annotation.BoolRes;
 import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DimenRes;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.IntegerRes;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.PluralsRes;
+import android.support.annotation.StringRes;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.content.res.AppCompatResources;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.widget.ImageView;
@@ -50,75 +62,83 @@ public final class Res {
         resources.updateConfiguration(config, getDisplayMetrics());
     }
 
-    public static String getString(int resId) {
+    @NonNull
+    public static String getString(@StringRes int resId) {
         return resources.getString(resId);
     }
 
-    public static String getString(int resId, Object... formatArgs) {
+    @NonNull
+    public static String getString(@StringRes int resId, Object... formatArgs) {
         return resources.getString(resId, formatArgs);
     }
 
-    public static CharSequence getText(int resId) {
+    @NonNull
+    public static CharSequence getText(@StringRes int resId) {
         return resources.getText(resId);
     }
 
-    public static CharSequence getText(int resId, CharSequence def) {
+    public static CharSequence getText(@StringRes int resId, CharSequence def) {
         return resources.getText(resId, def);
     }
 
-    public static int getInt(int id) {
-        return resources.getInteger(id);
+    public static int getInt(@IntegerRes int resId) {
+        return resources.getInteger(resId);
     }
 
-    public static boolean getBool(int id) {
-        return resources.getBoolean(id);
+    public static boolean getBool(@BoolRes int resId) {
+        return resources.getBoolean(resId);
     }
 
-    public static Drawable getDrawable(int id) {
-        //noinspection deprecation
-        return resources.getDrawable(id);
+    @Nullable
+    public static Drawable getDrawable(@DrawableRes int resId) {
+        return AppCompatResources.getDrawable(Utils.getApp(), resId);
     }
 
-    public static int getColor(int id) {
-        //noinspection deprecation
-        return resources.getColor(id);
+    @ColorInt
+    public static int getColor(@ColorRes int resId) {
+        return ContextCompat.getColor(Utils.getApp(), resId);
     }
 
-    public static ColorStateList getColorStateList(int id) {
-        //noinspection deprecation
-        return resources.getColorStateList(id);
+    public static ColorStateList getColorStateList(@ColorRes int resId) {
+        return AppCompatResources.getColorStateList(Utils.getApp(), resId);
     }
 
-    public static String getQuantityString(int id, int quantity) {
-        return resources.getQuantityString(id, quantity);
+    @NonNull
+    public static String getQuantityString(@PluralsRes int resId, int quantity) {
+        return resources.getQuantityString(resId, quantity);
     }
 
-    public static String getQuantityString(int id, int quantity, Object... formatArgs) {
-        return resources.getQuantityString(id, quantity, formatArgs);
+    @NonNull
+    public static String getQuantityString(@PluralsRes int resId, int quantity, Object... formatArgs) {
+        return resources.getQuantityString(resId, quantity, formatArgs);
     }
 
-    public static CharSequence getQuantityText(int id, int quantity) {
-        return resources.getQuantityText(id, quantity);
+    @NonNull
+    public static CharSequence getQuantityText(@PluralsRes int resId, int quantity) {
+        return resources.getQuantityText(resId, quantity);
     }
 
-    public static float getDimen(int id) {
-        return resources.getDimension(id);
+    public static float getDimen(@DimenRes int resId) {
+        return resources.getDimension(resId);
     }
 
-    public static int getDimensionPixelSize(int id) {
-        return resources.getDimensionPixelSize(id);
+    public static int getDimensionPixelSize(@DimenRes int resId) {
+        return resources.getDimensionPixelSize(resId);
     }
 
-    public static String[] getStringArray(int id) {
-        return resources.getStringArray(id);
+    @NonNull
+    public static String[] getStringArray(@ArrayRes int resId) {
+        return resources.getStringArray(resId);
     }
 
-    public static CharSequence[] getTextArray(int id) {
-        return resources.getTextArray(id);
+    @NonNull
+    public static CharSequence[] getTextArray(@ArrayRes int resId) {
+        return resources.getTextArray(resId);
     }
 
-    public static int[] getIntArray(int id) {
-        return resources.getIntArray(id);
+    @NonNull
+    public static int[] getIntArray(@ArrayRes int resId) {
+        return resources.getIntArray(resId);
     }
 
     public static AssetManager getAssets() {
@@ -174,11 +194,7 @@ public final class Res {
                 writer.write(buffer, 0, n);
             }
         } finally {
-            try {
-                is.close();
-            } catch (IOException e) {
-                // noop
-            }
+            IO.closeQuietly(is);
         }
 
         return writer.toString();
