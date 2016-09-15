@@ -55,9 +55,9 @@ We have to use the file provider because of this [issue](https://code.google.com
 The main module is utils, the other ones you can add if you need them. I don't want to add dependencies and permissions which can be useless, that's why I divide the library into modules.
 
 ```groovy
-compile 'com.evgeniysharafan.utils:utils:1.3.2'
+compile 'com.evgeniysharafan.utils:utils:1.4.0'
 ```
 ```groovy
-compile 'com.evgeniysharafan.utils:recycler:1.3.2'
-compile 'com.evgeniysharafan.utils:picasso:1.3.2'
+compile 'com.evgeniysharafan.utils:recycler:1.4.0'
+compile 'com.evgeniysharafan.utils:picasso:1.4.0'
 ```
