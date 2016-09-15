@@ -353,7 +353,12 @@ public final class Utils {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     public static boolean isRtl() {
-        return hasJellyBeanMr1() && Res.get().getConfiguration().getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+        return hasJellyBeanMr1() && Res.getConfiguration().getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public static boolean isRtl(Context context) {
+        return hasJellyBeanMr1() && Res.getConfiguration(context).getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
     }
 
     public static void setStartPadding(View view, int padding) {
@@ -413,8 +418,16 @@ public final class Utils {
         return Res.getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
     }
 
+    public static boolean isPortrait(Context context) {
+        return Res.getConfiguration(context).orientation == Configuration.ORIENTATION_PORTRAIT;
+    }
+
     public static boolean isLandscape() {
         return Res.getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+    }
+
+    public static boolean isLandscape(Context context) {
+        return Res.getConfiguration(context).orientation == Configuration.ORIENTATION_LANDSCAPE;
     }
 
     public static void copyToClipboard(CharSequence label, CharSequence text) {

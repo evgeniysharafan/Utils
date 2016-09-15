@@ -20,8 +20,8 @@ ext {
     supportLibVersion = "24.2.1"
 
     versionMajor = 1 // 1 - 20000
-    versionMinor = 3 // 0 - 99
-    versionPatch = 2 // 0 - 999
+    versionMinor = 4 // 0 - 99
+    versionPatch = 0 // 0 - 999
 
     versionCode = versionMajor * 100000 + versionMinor * 1000 + versionPatch
     versionName = "${versionMajor}.${versionMinor}.${versionPatch}"
