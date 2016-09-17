@@ -159,6 +159,10 @@ public final class Utils {
         return getApiVersion() >= Build.VERSION_CODES.M;
     }
 
+    public static boolean hasNougat() {
+        return getApiVersion() >= Build.VERSION_CODES.N;
+    }
+
     public static boolean canMakeCalls() {
         TelephonyManager tm = (TelephonyManager) app.getSystemService(Context.TELEPHONY_SERVICE);
         return tm.getSimState() == TelephonyManager.SIM_STATE_READY;
